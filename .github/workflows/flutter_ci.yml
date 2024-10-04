@@ -18,9 +18,9 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
 
-  # Job 2: Set up Flutter environment
-  setup_flutter:
-    name: Set up Flutter
+  # Job 2: Set up Flutter and Install Dependencies (combined)
+  setup_and_install:
+    name: Set up Flutter and Install Dependencies
     runs-on: ubuntu-latest
     needs: checkout
 
@@ -30,30 +30,23 @@ jobs:
       with:
         flutter-version: '3.24.3'
 
-    - name: Add Flutter to PATH
-      run: echo "$HOME/.flutter/bin" >> $GITHUB_PATH
+    - name: Verify Flutter installation
+      run: flutter --version
 
-  # Job 3: Install dependencies
-  install_dependencies:
-    name: Install Dependencies
-    runs-on: ubuntu-latest
-    needs: setup_flutter
-
-    steps:
     - name: Install Flutter dependencies
       run: flutter pub get
 
-  # Job 4: Run tests
+  # Job 3: Run tests
   run_tests:
     name: Run Flutter Tests
     runs-on: ubuntu-latest
-    needs: install_dependencies
+    needs: setup_and_install
 
     steps:
     - name: Run tests
       run: flutter test
 
-  # Job 5: Build APK for Android
+  # Job 4: Build APK for Android
   build_apk:
     name: Build APK
     runs-on: ubuntu-latest
@@ -63,7 +56,7 @@ jobs:
     - name: Build APK
       run: flutter build apk --release
 
-  # Job 6: Code review with GPT API
+  # Job 5: Code review with GPT API
   code_review_gpt:
     name: Code Review with GPT
     runs-on: ubuntu-latest
@@ -86,7 +79,7 @@ jobs:
         }')
         echo "response=$RESPONSE" >> $GITHUB_ENV
 
-  # Job 7: Post GPT review as a comment on PR
+  # Job 6: Post GPT review as a comment on PR
   post_review_comment:
     name: Post GPT Review as PR Comment
     runs-on: ubuntu-latest
