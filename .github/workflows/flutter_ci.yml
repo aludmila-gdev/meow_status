@@ -46,15 +46,18 @@ jobs:
         # Read the diff content into a variable
         DIFF_CONTENT=$(cat changes.diff)
 
+        # Concatenate the review message with the diff content
+        FULL_CONTENT="Review the following Flutter code changes:\n\n$DIFF_CONTENT"
+
         # Create the JSON body using jq to handle escaping and formatting
         JSON_BODY=$(jq -n \
         --arg content "You are a helpful assistant that reviews Flutter code." \
-        --arg diff_content "$DIFF_CONTENT" \
+        --arg diff_content "$FULL_CONTENT" \
         '{
           model: "gpt-3.5-turbo",
           messages: [
             {role: "system", content: $content},
-            {role: "user", content: "Review the following Flutter code changes:\n\n" + $diff_content}
+            {role: "user", content: $diff_content}
           ],
           max_tokens: 200
         }')
