@@ -87,17 +87,11 @@ jobs:
           echo "$RESPONSE" > gpt_response.json
         fi
 
-    # Step 7: Extract and display the assistant's message from the JSON response
+    # Step 7: Extract GPT response message to file
     - name: Extract GPT response message
       run: |
-        # Extract the message from the JSON file
-        ASSISTANT_MESSAGE=$(jq -r '.choices[0].message.content' gpt_response.json)
-
-        # Display the extracted message
-        echo "GPT response: $ASSISTANT_MESSAGE"
-
-        # Save it to the environment for later steps
-        echo "ASSISTANT_MESSAGE=$ASSISTANT_MESSAGE" >> $GITHUB_ENV
+        # Extract the message from the JSON file and save to a markdown file
+        jq -r '.choices[0].message.content' gpt_response.json > gpt_review.md
 
     # Step 8: Post GPT review as a comment on the pull request
     - name: Post GPT review comment
@@ -107,4 +101,4 @@ jobs:
         issue-number: ${{ github.event.pull_request.number }}
         body: |
           ## GPT Code Review
-          ${{ env.ASSISTANT_MESSAGE }}
+          $(cat gpt_review.md)
