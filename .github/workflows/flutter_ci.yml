@@ -34,6 +34,10 @@ jobs:
     - name: Run tests
       run: flutter test
 
+    # Optional: Build APK for Android
+    # - name: Build APK
+    #   run: flutter build apk --release
+
     # Step 5: Generate diff for GPT review
     - name: Generate diff for GPT review
       run: git diff origin/master...HEAD > changes.diff
@@ -46,7 +50,12 @@ jobs:
         DIFF_CONTENT=$(head -n 10 changes.diff)
 
         # Concatenate the review message with the diff content
-        FULL_CONTENT="Review this small Flutter code change:\n\n$DIFF_CONTENT"
+        FULL_CONTENT="Analyze the following Flutter code change:\n\n$DIFF_CONTENT\n\n
+        Please provide feedback on:
+        - Code structure and readability
+        - Potential bugs or issues
+        - Suggestions for refactoring or improving efficiency
+        - Any violations of best practices for Flutter or mobile development."
 
         # Create the JSON body using jq to handle escaping and formatting
         JSON_BODY=$(jq -n \
@@ -58,7 +67,7 @@ jobs:
             {role: "system", content: $content},
             {role: "user", content: $diff_content}
           ],
-          max_tokens: 10  # Limita a resposta a 10 tokens
+          max_tokens: 100  # Aumenta os tokens para permitir respostas mais detalhadas
         }')
 
         # Send the request to OpenAI API
