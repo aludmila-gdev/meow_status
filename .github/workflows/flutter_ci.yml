@@ -4,6 +4,10 @@ on:
   pull_request:
     branches:
       - master
+      
+permissions:
+  pull-requests: write
+  contents: read
 
 jobs:
   build:
