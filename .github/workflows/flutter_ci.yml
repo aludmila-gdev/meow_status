@@ -30,6 +30,9 @@ jobs:
       with:
         flutter-version: '3.24.3'
 
+    - name: Add Flutter to PATH
+      run: echo "$HOME/.flutter/bin" >> $GITHUB_PATH
+
   # Job 3: Install dependencies
   install_dependencies:
     name: Install Dependencies
