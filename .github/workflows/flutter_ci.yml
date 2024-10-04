@@ -43,12 +43,13 @@ jobs:
     - name: Request GPT code review
       id: gpt_review
       run: |
-        RESPONSE=$(curl -X POST "https://api.openai.com/v1/completions" \
+        RESPONSE=$(curl -X POST "https://api.openai.com/v1/chat/completions" \
         -H "Authorization: Bearer ${{ secrets.OPENAI_API_KEY }}" \
         -H "Content-Type: application/json" \
         -d '{
-            "model": "text-davinci-003",
-            "prompt": "Review the following Flutter code changes:\n\n$(cat changes.diff)",
+            "model": "gpt-3.5-turbo",
+            "messages": [{"role": "system", "content": "You are a helpful assistant that reviews Flutter code."},
+                         {"role": "user", "content": "Review the following Flutter code changes:\n\n$(cat changes.diff)"}],
             "max_tokens": 500
         }')
 
@@ -61,6 +62,7 @@ jobs:
         else
           echo "response=$RESPONSE" >> $GITHUB_ENV
         fi
+
 
 
 
