@@ -9,63 +9,37 @@ on:
       - master
 
 jobs:
-  # Job 1: Checkout the code
-  checkout:
-    name: Checkout Code
+  build:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
+    # Step 1: Checkout the repository code
+    - name: Checkout code
       uses: actions/checkout@v2
 
-  # Job 2: Set up Flutter and Install Dependencies (combined)
-  setup_and_install:
-    name: Set up Flutter and Install Dependencies
-    runs-on: ubuntu-latest
-    needs: checkout
-
-    steps:
-    - name: Install Flutter
+    # Step 2: Set up Flutter environment
+    - name: Set up Flutter
       uses: subosito/flutter-action@v2
       with:
         flutter-version: '3.24.3'
 
-    - name: Verify Flutter installation
-      run: flutter --version
-
-    - name: Install Flutter dependencies
+    # Step 3: Install dependencies
+    - name: Install dependencies
       run: flutter pub get
 
-  # Job 3: Run tests
-  run_tests:
-    name: Run Flutter Tests
-    runs-on: ubuntu-latest
-    needs: setup_and_install
-
-    steps:
+    # Step 4: Run tests (if you have tests)
     - name: Run tests
       run: flutter test
 
-  # Job 4: Build APK for Android
-  build_apk:
-    name: Build APK
-    runs-on: ubuntu-latest
-    needs: run_tests
-
-    steps:
+    # Optional: Build APK for Android
     - name: Build APK
       run: flutter build apk --release
 
-  # Job 5: Code review with GPT API
-  code_review_gpt:
-    name: Code Review with GPT
-    runs-on: ubuntu-latest
-    needs: run_tests
-
-    steps:
+    # Step 5: Generate diff for GPT review
     - name: Generate diff for GPT review
       run: git diff origin/master...HEAD > changes.diff
 
+    # Step 6: Request GPT code review
     - name: Request GPT code review
       id: gpt_review
       run: |
@@ -79,13 +53,7 @@ jobs:
         }')
         echo "response=$RESPONSE" >> $GITHUB_ENV
 
-  # Job 6: Post GPT review as a comment on PR
-  post_review_comment:
-    name: Post GPT Review as PR Comment
-    runs-on: ubuntu-latest
-    needs: code_review_gpt
-
-    steps:
+    # Step 7: Post GPT review as a comment on the pull request
     - name: Post GPT review comment
       uses: peter-evans/create-or-update-comment@v1
       with:
