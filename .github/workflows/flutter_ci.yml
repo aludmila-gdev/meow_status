@@ -50,7 +50,7 @@ jobs:
             "model": "gpt-3.5-turbo",
             "messages": [{"role": "system", "content": "You are a helpful assistant that reviews Flutter code."},
                          {"role": "user", "content": "Review the following Flutter code changes:\n\n$(cat changes.diff)"}],
-            "max_tokens": 500
+            "max_tokens": 200  # Reduzi para 200 tokens
         }')
 
         echo "API response: $RESPONSE"
@@ -62,8 +62,6 @@ jobs:
         else
           echo "response=$RESPONSE" >> $GITHUB_ENV
         fi
-
-
 
 
     # Step 7: Post GPT review as a comment on the pull request
