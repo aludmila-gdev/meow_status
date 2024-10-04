@@ -93,7 +93,16 @@ jobs:
         # Extract the message from the JSON file and save to a markdown file
         jq -r '.choices[0].message.content' gpt_response.json > gpt_review.md
 
-    # Step 8: Post GPT review as a comment on the pull request
+    # Step 8: Load the GPT response into an environment variable
+    - name: Load GPT response into variable
+      id: load_gpt_response
+      run: |
+        GPT_REVIEW=$(cat gpt_review.md)
+        echo "GPT_REVIEW<<EOF" >> $GITHUB_ENV
+        echo "$GPT_REVIEW" >> $GITHUB_ENV
+        echo "EOF" >> $GITHUB_ENV
+
+    # Step 9: Post GPT review as a comment on the pull request
     - name: Post GPT review comment
       uses: peter-evans/create-or-update-comment@v1
       with:
@@ -101,4 +110,4 @@ jobs:
         issue-number: ${{ github.event.pull_request.number }}
         body: |
           ## GPT Code Review
-          $(cat gpt_review.md)
+          ${{ env.GPT_REVIEW }}
