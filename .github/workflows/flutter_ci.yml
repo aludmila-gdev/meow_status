@@ -27,13 +27,13 @@ jobs:
     - name: Install dependencies
       run: flutter pub get
 
-    # Step 4: Run tests (if you have tests)
+    # Step 4: Run tests 
     - name: Run tests
       run: flutter test
 
     # Optional: Build APK for Android
-    - name: Build APK
-      run: flutter build apk --release
+    # - name: Build APK
+    #  run: flutter build apk --release
 
     # Step 5: Generate diff for GPT review
     - name: Generate diff for GPT review
@@ -47,7 +47,7 @@ jobs:
         -H "Authorization: Bearer ${{ secrets.OPENAI_API_KEY }}" \
         -H "Content-Type: application/json" \
         -d '{
-            "model": "gpt-4",
+            "model": "text-davinci-003",
             "prompt": "Review the following Flutter code changes:\n\n$(cat changes.diff)",
             "max_tokens": 500
         }')
@@ -61,6 +61,7 @@ jobs:
         else
           echo "response=$RESPONSE" >> $GITHUB_ENV
         fi
+
 
 
     # Step 7: Post GPT review as a comment on the pull request
