@@ -49,7 +49,7 @@ jobs:
         # Escape the diff content for JSON compatibility
         ESCAPED_DIFF_CONTENT=$(echo "$DIFF_CONTENT" | sed 's/"/\\"/g')
 
-        # Make the API call with correctly formatted JSON
+        # Make the API call with limited tokens
         RESPONSE=$(curl -X POST "https://api.openai.com/v1/chat/completions" \
         -H "Authorization: Bearer ${{ secrets.OPENAI_API_KEY }}" \
         -H "Content-Type: application/json" \
@@ -59,7 +59,7 @@ jobs:
               {"role": "system", "content": "You are a helpful assistant that reviews Flutter code."},
               {"role": "user", "content": "Review the following Flutter code changes:\n\n'"$ESCAPED_DIFF_CONTENT"'"}
             ],
-            "max_tokens": 200
+            "max_tokens": 50  # Reduzido para 50 tokens
         }')
 
         echo "API response: $RESPONSE"
