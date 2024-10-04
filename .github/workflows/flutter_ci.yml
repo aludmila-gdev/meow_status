@@ -10,9 +10,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    # Step 1: Checkout the repository code
+    # Step 1: Checkout the repository code with full history
     - name: Checkout code
       uses: actions/checkout@v2
+      with:
+        fetch-depth: 0  # Garantir que todo o histórico seja baixado
+
 
     # Step 2: Set up Flutter environment
     - name: Set up Flutter
