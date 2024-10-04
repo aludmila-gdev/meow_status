@@ -44,7 +44,7 @@ jobs:
       id: gpt_review
       run: |
         # Read the diff content into a variable (limit the number of lines to minimize tokens)
-        DIFF_CONTENT=$(head -n 10 changes.diff)  # Limita o diff a 10 linhas
+        DIFF_CONTENT=$(head -n 10 changes.diff)
 
         # Concatenate the review message with the diff content
         FULL_CONTENT="Review this small Flutter code change:\n\n$DIFF_CONTENT"
@@ -75,7 +75,8 @@ jobs:
           echo "Error in GPT API response"
           exit 1
         else
-          echo "response=$RESPONSE" >> $GITHUB_ENV
+          # Use printf to correctly escape the JSON response when saving to the environment
+          printf "response=%s\n" "$RESPONSE" >> $GITHUB_ENV
         fi
 
 
