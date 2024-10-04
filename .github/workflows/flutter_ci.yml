@@ -51,7 +51,17 @@ jobs:
             "prompt": "Review the following Flutter code changes:\n\n$(cat changes.diff)",
             "max_tokens": 500
         }')
-        echo "response=$RESPONSE" >> $GITHUB_ENV
+
+        echo "API response: $RESPONSE"
+
+        # Check if the response contains an error
+        if echo "$RESPONSE" | grep -q '"error":'; then
+          echo "Error in GPT API response"
+          exit 1
+        else
+          echo "response=$RESPONSE" >> $GITHUB_ENV
+        fi
+
 
     # Step 7: Post GPT review as a comment on the pull request
     - name: Post GPT review comment
