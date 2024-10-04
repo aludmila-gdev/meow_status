@@ -46,21 +46,24 @@ jobs:
         # Read the diff content into a variable
         DIFF_CONTENT=$(cat changes.diff)
 
-        # Escape the diff content for JSON compatibility
-        ESCAPED_DIFF_CONTENT=$(echo "$DIFF_CONTENT" | jq -Rsa .)
+        # Create the JSON body using jq to handle escaping and formatting
+        JSON_BODY=$(jq -n \
+        --arg content "You are a helpful assistant that reviews Flutter code." \
+        --arg diff_content "$DIFF_CONTENT" \
+        '{
+          model: "gpt-3.5-turbo",
+          messages: [
+            {role: "system", content: $content},
+            {role: "user", content: "Review the following Flutter code changes:\n\n" + $diff_content}
+          ],
+          max_tokens: 200
+        }')
 
-        # Make the API call with correctly formatted JSON
+        # Send the request to OpenAI API
         RESPONSE=$(curl -X POST "https://api.openai.com/v1/chat/completions" \
         -H "Authorization: Bearer ${{ secrets.OPENAI_API_KEY }}" \
         -H "Content-Type: application/json" \
-        -d '{
-            "model": "gpt-3.5-turbo",
-            "messages": [
-              {"role": "system", "content": "You are a helpful assistant that reviews Flutter code."},
-              {"role": "user", "content": "Review the following Flutter code changes:\n\n'"$ESCAPED_DIFF_CONTENT"'"}
-            ],
-            "max_tokens": 200
-        }')
+        -d "$JSON_BODY")
 
         echo "API response: $RESPONSE"
 
@@ -71,6 +74,7 @@ jobs:
         else
           echo "response=$RESPONSE" >> $GITHUB_ENV
         fi
+
 
     # Step 7: Post GPT review as a comment on the pull request
     - name: Post GPT review comment
