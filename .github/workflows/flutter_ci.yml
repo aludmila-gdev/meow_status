@@ -9,28 +9,92 @@ on:
       - master
 
 jobs:
-  build:
+  # Job 1: Checkout the code
+  checkout:
+    name: Checkout Code
     runs-on: ubuntu-latest
 
     steps:
-    # Step 1: Checkout the repository code
-    - name: Checkout code
+    - name: Checkout repository
       uses: actions/checkout@v2
 
-    # Step 2: Set up Flutter environment
-    - name: Set up Flutter
+  # Job 2: Set up Flutter environment
+  setup_flutter:
+    name: Set up Flutter
+    runs-on: ubuntu-latest
+    needs: checkout
+
+    steps:
+    - name: Install Flutter
       uses: subosito/flutter-action@v2
       with:
         flutter-version: '3.24.3'
 
-    # Step 3: Install dependencies
-    - name: Install dependencies
+  # Job 3: Install dependencies
+  install_dependencies:
+    name: Install Dependencies
+    runs-on: ubuntu-latest
+    needs: setup_flutter
+
+    steps:
+    - name: Install Flutter dependencies
       run: flutter pub get
 
-    # Step 4: Run tests (if you have tests)
+  # Job 4: Run tests
+  run_tests:
+    name: Run Flutter Tests
+    runs-on: ubuntu-latest
+    needs: install_dependencies
+
+    steps:
     - name: Run tests
       run: flutter test
 
-    # Optional: Build APK for Android
+  # Job 5: Build APK for Android
+  build_apk:
+    name: Build APK
+    runs-on: ubuntu-latest
+    needs: run_tests
+
+    steps:
     - name: Build APK
       run: flutter build apk --release
+
+  # Job 6: Code review with GPT API
+  code_review_gpt:
+    name: Code Review with GPT
+    runs-on: ubuntu-latest
+    needs: run_tests
+
+    steps:
+    - name: Generate diff for GPT review
+      run: git diff origin/master...HEAD > changes.diff
+
+    - name: Request GPT code review
+      id: gpt_review
+      run: |
+        RESPONSE=$(curl -X POST "https://api.openai.com/v1/completions" \
+        -H "Authorization: Bearer ${{ secrets.OPENAI_API_KEY }}" \
+        -H "Content-Type: application/json" \
+        -d '{
+            "model": "gpt-4",
+            "prompt": "Review the following Flutter code changes:\n\n$(cat changes.diff)",
+            "max_tokens": 500
+        }')
+        echo "response=$RESPONSE" >> $GITHUB_ENV
+
+  # Job 7: Post GPT review as a comment on PR
+  post_review_comment:
+    name: Post GPT Review as PR Comment
+    runs-on: ubuntu-latest
+    needs: code_review_gpt
+
+    steps:
+    - name: Post GPT review comment
+      uses: peter-evans/create-or-update-comment@v1
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        issue-number: ${{ github.event.pull_request.number }}
+        body: |
+          ## GPT Code Review
+          ${{ env.response }}
