@@ -43,15 +43,15 @@ jobs:
     - name: Request GPT code review
       id: gpt_review
       run: |
-        # Read the diff content into a variable
-        DIFF_CONTENT=$(cat changes.diff)
+        # Read the diff content into a variable (limit the number of lines to minimize tokens)
+        DIFF_CONTENT=$(head -n 10 changes.diff)  # Limita o diff a 10 linhas
 
         # Concatenate the review message with the diff content
-        FULL_CONTENT="Review the following Flutter code changes:\n\n$DIFF_CONTENT"
+        FULL_CONTENT="Review this small Flutter code change:\n\n$DIFF_CONTENT"
 
         # Create the JSON body using jq to handle escaping and formatting
         JSON_BODY=$(jq -n \
-        --arg content "You are a helpful assistant that reviews Flutter code." \
+        --arg content "Assistant for reviewing code." \
         --arg diff_content "$FULL_CONTENT" \
         '{
           model: "gpt-3.5-turbo",
@@ -59,7 +59,7 @@ jobs:
             {role: "system", content: $content},
             {role: "user", content: $diff_content}
           ],
-          max_tokens: 200
+          max_tokens: 10  # Limita a resposta a 10 tokens
         }')
 
         # Send the request to OpenAI API
