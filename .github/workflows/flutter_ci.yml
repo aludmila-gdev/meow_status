@@ -39,6 +39,7 @@ jobs:
     - name: Generate diff for GPT review
       run: git diff origin/master...HEAD > changes.diff
 
+
     # Step 6: Request GPT code review
     - name: Request GPT code review
       id: gpt_review
@@ -75,12 +76,17 @@ jobs:
           echo "Error in GPT API response"
           exit 1
         else
-          # Use printf to correctly escape the JSON response when saving to the environment
-          printf "response=%s\n" "$RESPONSE" >> $GITHUB_ENV
+          # Save the response to a file instead of using GITHUB_ENV
+          echo "$RESPONSE" > gpt_response.json
         fi
 
+    # Step 7: Optional - Read and use the saved response
+    - name: Process GPT response
+      run: |
+        cat gpt_response.json
 
-    # Step 7: Post GPT review as a comment on the pull request
+
+    # Step 8: Post GPT review as a comment on the pull request
     - name: Post GPT review comment
       uses: peter-evans/create-or-update-comment@v1
       with:
@@ -88,4 +94,5 @@ jobs:
         issue-number: ${{ github.event.pull_request.number }}
         body: |
           ## GPT Code Review
-          ${{ env.response }}
+          ${{ env.ASSISTANT_MESSAGE }}
+
