@@ -43,14 +43,23 @@ jobs:
     - name: Request GPT code review
       id: gpt_review
       run: |
+        # Read the diff content into a variable
+        DIFF_CONTENT=$(cat changes.diff)
+
+        # Escape the diff content for JSON compatibility
+        ESCAPED_DIFF_CONTENT=$(echo "$DIFF_CONTENT" | sed 's/"/\\"/g')
+
+        # Make the API call with correctly formatted JSON
         RESPONSE=$(curl -X POST "https://api.openai.com/v1/chat/completions" \
         -H "Authorization: Bearer ${{ secrets.OPENAI_API_KEY }}" \
         -H "Content-Type: application/json" \
         -d '{
             "model": "gpt-3.5-turbo",
-            "messages": [{"role": "system", "content": "You are a helpful assistant that reviews Flutter code."},
-                         {"role": "user", "content": "Review the following Flutter code changes:\n\n$(cat changes.diff)"}],
-            "max_tokens": 200  # Reduzi para 200 tokens
+            "messages": [
+              {"role": "system", "content": "You are a helpful assistant that reviews Flutter code."},
+              {"role": "user", "content": "Review the following Flutter code changes:\n\n'"$ESCAPED_DIFF_CONTENT"'"}
+            ],
+            "max_tokens": 200
         }')
 
         echo "API response: $RESPONSE"
