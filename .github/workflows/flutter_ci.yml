@@ -20,7 +20,6 @@ jobs:
       with:
         fetch-depth: 0  # Garantir que todo o histórico seja baixado
 
-
     # Step 2: Set up Flutter environment
     - name: Set up Flutter
       uses: subosito/flutter-action@v2
@@ -35,14 +34,9 @@ jobs:
     - name: Run tests
       run: flutter test
 
-    # Optional: Build APK for Android
-    # - name: Build APK
-    #  run: flutter build apk --release
-
     # Step 5: Generate diff for GPT review
     - name: Generate diff for GPT review
       run: git diff origin/master...HEAD > changes.diff
-
 
     # Step 6: Request GPT code review
     - name: Request GPT code review
@@ -84,11 +78,17 @@ jobs:
           echo "$RESPONSE" > gpt_response.json
         fi
 
-    # Step 7: Optional - Read and use the saved response
-    - name: Process GPT response
+    # Step 7: Extract and display the assistant's message from the JSON response
+    - name: Extract GPT response message
       run: |
-        cat gpt_response.json
+        # Extract the message from the JSON file
+        ASSISTANT_MESSAGE=$(jq -r '.choices[0].message.content' gpt_response.json)
 
+        # Display the extracted message
+        echo "GPT response: $ASSISTANT_MESSAGE"
+
+        # Save it to the environment for later steps
+        echo "ASSISTANT_MESSAGE=$ASSISTANT_MESSAGE" >> $GITHUB_ENV
 
     # Step 8: Post GPT review as a comment on the pull request
     - name: Post GPT review comment
@@ -99,4 +99,3 @@ jobs:
         body: |
           ## GPT Code Review
           ${{ env.ASSISTANT_MESSAGE }}
-
