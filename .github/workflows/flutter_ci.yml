@@ -46,16 +46,24 @@ jobs:
     - name: Request Gemini code review
       id: gemini_review
       run: |
-        # Read the full diff content into a variable (no line limitation)
+        # Read the full diff content into a variable
         DIFF_CONTENT=$(cat changes.diff)
+
+        # Escape the DIFF_CONTENT for JSON
+        ESCAPED_DIFF_CONTENT=$(echo "$DIFF_CONTENT" | jq -Rs .)
 
         # Optimized review message
         FULL_CONTENT="Análise de código Flutter:\n\nAlterações:\n$DIFF_CONTENT\n\nFeedback:\n1. Boas práticas de Flutter?\n2. Resumo das alterações.\n3. Riscos de bugs?\n4. Sugestões de refatoração.\n5. Dívidas técnicas?"
 
+        # Create the JSON payload using jq
+        JSON_PAYLOAD=$(jq -n \
+        --arg content "$FULL_CONTENT" \
+        '{"contents":[{"role": "user", "parts":[{"text": $content}]}]}')
+
         # Send the request to the Gemini API
         API_KEY=${{ secrets.GOOGLE_GEMINI_API_KEY }}
         RESPONSE=$(curl -H 'Content-Type: application/json' \
-          -d '{"contents":[{"role": "user", "parts":[{"text": "'"$FULL_CONTENT"'"}]}]}' \
+          -d "$JSON_PAYLOAD" \
           "https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=${API_KEY}")
 
         echo "API response: $RESPONSE"
