@@ -47,8 +47,8 @@ jobs:
       id: gemini_review
       run: |
         # Read the diff content into a variable
-        DIFF_CONTENT=$(head -n 10 changes.diff)
-
+        DIFF_CONTENT= changes.diff
+        
         # Optimized review message
         FULL_CONTENT="Análise de código Flutter:\n\nAlterações:\n$DIFF_CONTENT\n\nFeedback:\n1. Boas práticas de Flutter?\n2. Resumo das alterações.\n3. Riscos de bugs?\n4. Sugestões de refatoração.\n5. Dívidas técnicas?"
 
