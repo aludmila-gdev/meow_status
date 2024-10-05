@@ -49,7 +49,7 @@ jobs:
         # Read the diff content into a variable
         DIFF_CONTENT=$(head -n 10 changes.diff)
 
-        # Concatenate the review message with the diff content
+        # Optimized review message
         FULL_CONTENT="Análise de código Flutter:\n\nAlterações:\n$DIFF_CONTENT\n\nFeedback:\n1. Boas práticas de Flutter?\n2. Resumo das alterações.\n3. Riscos de bugs?\n4. Sugestões de refatoração.\n5. Dívidas técnicas?"
 
         # Send the request to the Gemini API
@@ -65,15 +65,19 @@ jobs:
           echo "Error in Gemini API response"
           exit 1
         else
-          # Save the response to a file instead of using GITHUB_ENV
+          # Save the response to a file
           echo "$RESPONSE" > gemini_response.json
         fi
 
     # Step 7: Extract Gemini response message to file
     - name: Extract Gemini response message
       run: |
-        # Extract the message from the JSON file and save to a markdown file
-        jq -r '.contents[0].parts[0].text' gemini_response.json > gemini_review.md
+        # Ensure the response contains valid content
+        if jq -e '.candidates[0].content.parts[0].text' gemini_response.json > /dev/null; then
+          jq -r '.candidates[0].content.parts[0].text' gemini_response.json > gemini_review.md
+        else
+          echo "No valid content in response" > gemini_review.md
+        fi
 
     # Step 8: Load the Gemini response into an environment variable
     - name: Load Gemini response into variable
