@@ -5,14 +5,20 @@ on:
     branches:
       - master
 
+permissions:
+  pull-requests: write
+  contents: read
+
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-    # Step 1: Checkout the repository code
+    # Step 1: Checkout the repository code with full history
     - name: Checkout code
       uses: actions/checkout@v2
+      with:
+        fetch-depth: 0  # Garantir que todo o histórico seja baixado
 
     # Step 2: Set up Flutter environment
     - name: Set up Flutter
@@ -30,39 +36,34 @@ jobs:
 
     # Optional: Build APK for Android
     # - name: Build APK
-    #  run: flutter build apk --release
+    #   run: flutter build apk --release
 
-    # Step 5: Generate diff for GPT review
-    - name: Generate diff for GPT review
+    # Step 5: Generate diff for Gemini review
+    - name: Generate diff for Gemini review
       run: git diff origin/master...HEAD > changes.diff
 
-
-    # Step 6: Request GPT code review
-    - name: Request GPT code review
-      id: gpt_review
+    # Step 6: Request Gemini code review
+    - name: Request Gemini code review
+      id: gemini_review
       run: |
         # Read the diff content into a variable (limit the number of lines to minimize tokens)
         DIFF_CONTENT=$(head -n 10 changes.diff)
 
-        # Concatenate the review message with the diff content
-        FULL_CONTENT="Review this small Flutter code change:\n\n$DIFF_CONTENT"
+        # Optimized review message
+        FULL_CONTENT="Análise de código Flutter:\n\nAlterações:\n$DIFF_CONTENT\n\nFeedback:\n1. Boas práticas de Flutter?\n2. Resumo das alterações.\n3. Riscos de bugs?\n4. Sugestões de refatoração.\n5. Dívidas técnicas?"
 
         # Create the JSON body using jq to handle escaping and formatting
         JSON_BODY=$(jq -n \
-        --arg content "Assistant for reviewing code." \
         --arg diff_content "$FULL_CONTENT" \
         '{
-          model: "gpt-3.5-turbo",
-          messages: [
-            {role: "system", content: $content},
-            {role: "user", content: $diff_content}
-          ],
-          max_tokens: 10  # Limita a resposta a 10 tokens
+          model: "gemini-1",
+          prompt: $diff_content,
+          max_tokens: 100
         }')
 
-        # Send the request to OpenAI API
-        RESPONSE=$(curl -X POST "https://api.openai.com/v1/chat/completions" \
-        -H "Authorization: Bearer ${{ secrets.OPENAI_API_KEY }}" \
+        # Send the request to the Gemini API
+        RESPONSE=$(curl -X POST "https://api.google.com/gemini/v1/completions" \
+        -H "Authorization: Bearer ${{ secrets.GOOGLE_GEMINI_API_KEY }}" \
         -H "Content-Type: application/json" \
         -d "$JSON_BODY")
 
@@ -70,26 +71,34 @@ jobs:
 
         # Check if the response contains an error
         if echo "$RESPONSE" | grep -q '"error":'; then
-          echo "Error in GPT API response"
+          echo "Error in Gemini API response"
           exit 1
         else
           # Save the response to a file instead of using GITHUB_ENV
-          echo "$RESPONSE" > gpt_response.json
+          echo "$RESPONSE" > gemini_response.json
         fi
 
-    # Step 7: Optional - Read and use the saved response
-    - name: Process GPT response
+    # Step 7: Extract Gemini response message to file
+    - name: Extract Gemini response message
       run: |
-        cat gpt_response.json
+        # Extract the message from the JSON file and save to a markdown file
+        jq -r '.choices[0].text' gemini_response.json > gemini_review.md
 
+    # Step 8: Load the Gemini response into an environment variable
+    - name: Load Gemini response into variable
+      id: load_gemini_response
+      run: |
+        GEMINI_REVIEW=$(cat gemini_review.md)
+        echo "GEMINI_REVIEW<<EOF" >> $GITHUB_ENV
+        echo "$GEMINI_REVIEW" >> $GITHUB_ENV
+        echo "EOF" >> $GITHUB_ENV
 
-    # Step 8: Post GPT review as a comment on the pull request
-    - name: Post GPT review comment
+    # Step 9: Post Gemini review as a comment on the pull request
+    - name: Post Gemini review comment
       uses: peter-evans/create-or-update-comment@v1
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
         issue-number: ${{ github.event.pull_request.number }}
         body: |
-          ## GPT Code Review
-          ${{ env.ASSISTANT_MESSAGE }}
-
+          ## Gemini Code Review
+          ${{ env.GEMINI_REVIEW }}
