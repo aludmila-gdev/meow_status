@@ -104,7 +104,3 @@ jobs:
         body: |
           ## Gemini Code Review
           ${{ env.GEMINI_REVIEW }}
-
-    # Step 10: Debug output for troubleshooting
-    - name: Debug output
-      run: echo "Gemini Review: ${{ env.GEMINI_REVIEW }}"
