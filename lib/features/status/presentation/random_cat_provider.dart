@@ -1,22 +1,40 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../data/cat_image_repository.dart';
 import 'dart:math';
 
-import 'package:meow_status/features/status/data/cat_image_repository.dart';
-import 'package:meow_status/features/status/domain/fetch_cat_image_usecase.dart';
+// Lista de códigos de status válidos para http.cat
+final List<int> validStatusCodes = [
+  100,
+  101,
+  200,
+  201,
+  202,
+  204,
+  301,
+  302,
+  400,
+  401,
+  403,
+  404,
+  500
+];
 
+// Provider responsável por gerenciar o estado da imagem do gato
 final catImageProvider =
     StateNotifierProvider<CatImageNotifier, String?>((ref) {
-  final repository = FetchCatImageUseCase(CatImageRepository());
+  final repository = CatImageRepository();
   return CatImageNotifier(repository);
 });
 
 class CatImageNotifier extends StateNotifier<String?> {
-  final FetchCatImageUseCase _useCase;
+  final CatImageRepository _repository;
 
-  CatImageNotifier(this._useCase) : super(null);
+  CatImageNotifier(this._repository) : super(null);
 
   void fetchRandomCat() async {
-    final randomStatusCode = Random().nextInt(100) + 100;
-    state = await _useCase.execute(randomStatusCode);
+    // Gera um status code aleatório da lista de códigos válidos
+    final randomStatusCode =
+        validStatusCodes[Random().nextInt(validStatusCodes.length)];
+    state = await _repository.fetchCatImage(randomStatusCode);
   }
 }

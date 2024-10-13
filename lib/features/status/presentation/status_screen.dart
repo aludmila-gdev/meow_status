@@ -23,7 +23,8 @@ class StatusScreen extends ConsumerWidget {
             if (catImage != null)
               Image.network(catImage) // Exibe a imagem do gato
             else
-              const CircularProgressIndicator(),
+              const Text(
+                  'Não foi possível carregar a imagem do gato. Tente novamente!'),
             const SizedBox(height: 20),
             Text(
               catQuote, // Exibe a frase fofa de gato
