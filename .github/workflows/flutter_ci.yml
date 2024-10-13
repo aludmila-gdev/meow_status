@@ -24,43 +24,34 @@ jobs:
     - name: Generate filtered diff for Gemini review
       run: git diff origin/master...HEAD -- '*.dart' > changes.diff
 
-    # Step 3: Split the diff into smaller chunks (1000 characters) and send to Gemini in multiple requests
-    - name: Send diff to Gemini in chunks
+    # Step 3: Send the full diff to Gemini in one request
+    - name: Send full diff to Gemini
       id: gemini_review
       run: |
         # Read the full diff content into a variable
         DIFF_CONTENT=$(cat changes.diff)
 
-        # Define chunk size and split the content into smaller parts
-        CHUNK_SIZE=1000
-        TOTAL_LENGTH=${#DIFF_CONTENT}
+        # Escape the full DIFF_CONTENT for JSON
+        ESCAPED_DIFF=$(echo "$DIFF_CONTENT" | jq -Rs .)
 
-        # Loop through each chunk and send to Gemini API
-        for (( i=1; i<=$TOTAL_LENGTH; i+=$CHUNK_SIZE )); do
-          CHUNK=$(echo "$DIFF_CONTENT" | cut -b $i-$((i+CHUNK_SIZE-1)))
+        # Optimized review message with emojis and direct prompts
+        FULL_CONTENT=$(printf "🔍 **Resumo Detalhado das Alterações do PR:**\nResumo detalhado do que foi modificado no PR com base no diff:\n%s\n\n📝 **Boas práticas de Flutter (inclua emojis):**\nO código segue boas práticas de Flutter? Cite exemplos claros e aponte práticas específicas relacionadas a widgets, state management, arquitetura, entre outros.\n\n⚠️ **Riscos de Bugs (inclua emojis):**\nIdentifique riscos específicos com base no código fornecido, apontando os trechos onde os problemas podem ocorrer.\n\n🛠 **Sugestões de Refatoração (com exemplos de código e emojis):**\nSugira melhorias no código com exemplos práticos:\n```dart\nvoid exampleRefactor() {\n  // Exemplo de refatoração\n}\n```\n\n💡 **Dívidas Técnicas (inclua emojis):**\nListe dívidas técnicas que podem ser introduzidas, mesmo que sejam mínimas." "$ESCAPED_DIFF")
 
-          # Escape the CHUNK for JSON
-          ESCAPED_CHUNK=$(echo "$CHUNK" | jq -Rs .)
+        # Create the JSON payload using jq
+        JSON_PAYLOAD=$(jq -n \
+        --arg content "$FULL_CONTENT" \
+        '{"contents":[{"role": "user", "parts":[{"text": $content}]}]}')
 
-          # Simplified and optimized review message with emojis and direct prompts
-          FULL_CONTENT=$(printf "🔍 **Resumo Detalhado das Alterações do PR:**\n%s\n\n📝 **Boas práticas de Flutter (inclua emojis):**\nO código segue boas práticas? Cite exemplos claros sobre widgets, state management, arquitetura, entre outros.\n\n⚠️ **Riscos de Bugs (inclua emojis):**\nIdentifique riscos específicos, apontando os trechos onde problemas podem ocorrer.\n\n🛠 **Sugestões de Refatoração (com exemplos de código e emojis):**\nSugira melhorias no código com exemplos práticos:\n```dart\nvoid exampleRefactor() {\n  // Exemplo de refatoração\n}\n```\n\n💡 **Dívidas Técnicas (inclua emojis):**\nListe dívidas técnicas que podem ser introduzidas, mesmo que sejam mínimas." "$CHUNK")
+        # Send the request to the Gemini API
+        API_KEY=${{ secrets.GOOGLE_GEMINI_API_KEY }}
+        RESPONSE=$(curl -H 'Content-Type: application/json' \
+          -d "$JSON_PAYLOAD" \
+          "https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=${API_KEY}")
 
-          # Create the JSON payload using jq
-          JSON_PAYLOAD=$(jq -n \
-          --arg content "$FULL_CONTENT" \
-          '{"contents":[{"role": "user", "parts":[{"text": $content}]}]}')
+        echo "API response: $RESPONSE"
 
-          # Send the request to the Gemini API
-          API_KEY=${{ secrets.GOOGLE_GEMINI_API_KEY }}
-          RESPONSE=$(curl -H 'Content-Type: application/json' \
-            -d "$JSON_PAYLOAD" \
-            "https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=${API_KEY}")
-
-          echo "API response: $RESPONSE"
-
-          # Save the response to a file
-          echo "$RESPONSE" >> gemini_response.json
-        done
+        # Save the response to a file
+        echo "$RESPONSE" > gemini_response.json
 
     # Step 4: Extract Gemini response message to file
     - name: Extract Gemini response message
