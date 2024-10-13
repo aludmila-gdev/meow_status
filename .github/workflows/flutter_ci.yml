@@ -34,9 +34,9 @@ jobs:
     # - name: Build APK
     #   run: flutter build apk --release
 
-    # Step 5: Generate diff for Gemini review
-    - name: Generate diff for Gemini review
-      run: git diff origin/master...HEAD > changes.diff
+    # Step 5: Generate filtered diff for Gemini review (only .dart files)
+    - name: Generate filtered diff for Gemini review
+      run: git diff origin/master...HEAD -- '*.dart' > changes.diff
 
     # Step 6: Split the diff into chunks and send to Gemini
     - name: Send diff to Gemini in chunks
