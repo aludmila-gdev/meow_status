@@ -35,25 +35,20 @@ jobs:
         ESCAPED_DIFF=$(echo "$DIFF_CONTENT" | jq -Rs .)
 
         # Explicitly detailed and optimized review message with emojis, summary, and code snippets
-        FULL_CONTENT=$(printf "🔍 **Resumo Detalhado das Alterações do PR (OBRIGATÓRIO):**\n
-        Descreva **claramente** todas as alterações feitas no PR e adicione detalhes específicos como widgets, gerenciamento de estado, e funcionalidades criadas ou removidas.\n\n
+        FULL_CONTENT=$(printf "🔍 **Resumo Detalhado das Alterações do PR:**\n
+        Por favor, forneça uma análise detalhada das alterações feitas neste PR. O objetivo é que a resposta liste cada modificação no código **com base nos arquivos alterados**.\n\n
 
         📝 **Boas práticas de Flutter (OBRIGATÓRIO, inclua emojis):**\n
-        Analise as boas práticas seguidas no código. Exponha exemplos claros relacionados a widgets, state management, e arquitetura, com emojis para destacar as boas práticas.\n\n
+        Analise as boas práticas seguidas no código. Exponha exemplos claros relacionados a widgets, gerenciamento de estado, e arquitetura, utilizando emojis apropriados para cada categoria. Por favor, seja específico sobre como cada parte do código reflete essas práticas.\n\n
 
         ⚠️ **Riscos de Bugs (OBRIGATÓRIO, inclua emojis):**\n
-        Aponte os riscos específicos de bugs no código e cite explicitamente os trechos que podem causar esses riscos. Use emojis para destacar os riscos críticos.\n\n
+        Aponte os riscos específicos de bugs no código, **citar explicitamente** os trechos que podem causar esses riscos, e relacione cada risco aos arquivos e linhas do código. Use emojis para destacar os riscos mais críticos.\n\n
 
         🛠 **Sugestões de Refatoração (OBRIGATÓRIO, com exemplos de código e emojis):**\n
-        Sugira refatorações detalhadas, incluindo exemplos práticos. Use emojis para destacar a importância das sugestões:\n
-        ```dart\n
-        void exampleRefactor() {\n
-          // Exemplo de refatoração para otimizar a busca de imagens\n
-        }\n
-        ```\n\n
+        Sugira refatorações detalhadas, incluindo exemplos práticos. Incluir sugestões para melhorar a performance e a legibilidade do código, destacando as refatorações prioritárias com emojis.\n\n
 
         💡 **Dívidas Técnicas (OBRIGATÓRIO, inclua emojis):**\n
-        Liste as dívidas técnicas com clareza. Se não houver, forneça algo mínimo como possíveis melhorias futuras." "$DIFF_CONTENT")
+        Liste as dívidas técnicas com clareza. Mesmo que as dívidas sejam mínimas, inclua sugestões de melhorias futuras e sempre utilize exemplos práticos com emojis para tornar a análise mais compreensível." "$DIFF_CONTENT")
 
         # Create the JSON payload using jq
         JSON_PAYLOAD=$(jq -n \
