@@ -32,10 +32,10 @@ jobs:
         DIFF_CONTENT=$(cat changes.diff)
 
         # Escape the full DIFF_CONTENT for JSON
-        ESCAPED_DIFF=$(echo "$DIFF_CONTENT" | jq -Rs .)
+        ESCAPED_DIFF=$(jq -Rs . <<< "$DIFF_CONTENT")
 
-        # Optimized review message with emojis and direct prompts
-        FULL_CONTENT=$(printf "🔍 **Resumo Detalhado das Alterações do PR:**\nResumo detalhado do que foi modificado no PR com base no diff:\n%s\n\n📝 **Boas práticas de Flutter (inclua emojis):**\nO código segue boas práticas de Flutter? Cite exemplos claros e aponte práticas específicas relacionadas a widgets, state management, arquitetura, entre outros.\n\n⚠️ **Riscos de Bugs (inclua emojis):**\nIdentifique riscos específicos com base no código fornecido, apontando os trechos onde os problemas podem ocorrer.\n\n🛠 **Sugestões de Refatoração (com exemplos de código e emojis):**\nSugira melhorias no código com exemplos práticos:\n```dart\nvoid exampleRefactor() {\n  // Exemplo de refatoração\n}\n```\n\n💡 **Dívidas Técnicas (inclua emojis):**\nListe dívidas técnicas que podem ser introduzidas, mesmo que sejam mínimas." "$ESCAPED_DIFF")
+        # Optimized review message
+        FULL_CONTENT="🔍 **Resumo Detalhado das Alterações do PR:**\nResumo detalhado das alterações:\n$DIFF_CONTENT\n\n📝 **Boas práticas de Flutter:**\nO código segue boas práticas de Flutter? Cite exemplos claros de práticas específicas relacionadas a widgets, state management e arquitetura.\n\n⚠️ **Riscos de Bugs:**\nIdentifique e descreva riscos específicos de bugs com base no código fornecido.\n\n🛠 **Sugestões de Refatoração (com exemplos de código):**\nSugira melhorias no código com exemplos práticos:\n```dart\nvoid exampleRefactor() {\n  // Exemplo de refatoração\n}\n```\n\n💡 **Dívidas Técnicas:**\nListe as dívidas técnicas que podem ser introduzidas."
 
         # Create the JSON payload using jq
         JSON_PAYLOAD=$(jq -n \
