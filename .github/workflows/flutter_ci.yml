@@ -48,8 +48,8 @@ jobs:
         # Escape the full DIFF_CONTENT for JSON
         ESCAPED_DIFF=$(echo "$DIFF_CONTENT" | jq -Rs .)
 
-        # Optimized review message with updated structure and emojis
-        FULL_CONTENT="🚀 **Resumo das Alterações:**\n\n$DIFF_CONTENT\n\n📝 **Boas práticas de Flutter?**\n1. O código segue boas práticas de Flutter?\n2. Uso correto de state management?\n3. Nomes de variáveis consistentes?\n\n⚠️ **Riscos de Bugs?**\nIdentificar riscos com a mudança.\n\n🛠 **Sugestões de Refatoração (com exemplo):**\nSe possível, incluir sugestões de refatoração com exemplos de código.\n\n💡 **Dívidas Técnicas?**\nHá alguma dívida técnica que precisa ser observada?"
+        # Optimized review message with detailed prompt and emojis
+        FULL_CONTENT="🚀 **Resumo das Alterações:**\n\n$DIFF_CONTENT\n\n📝 **Boas práticas de Flutter?**\n1. O código segue boas práticas de Flutter? Cite exemplos e aponte boas práticas como widgets, state management, ou arquitetura.\n2. **Links relevantes de documentação**: Caso necessário, sugerir links como [Documentação Flutter](https://docs.flutter.dev), [Hive](https://docs.hivedb.dev), [Riverpod](https://riverpod.dev/docs/getting_started).\n\n⚠️ **Riscos de Bugs?**\nAnalise possíveis riscos introduzidos.\n\n🛠 **Sugestões de Refatoração (com exemplos de código):**\n1. Incluir sugestões de refatoração, como usar funções, organizar melhor o código, ou modularizar componentes. \nExemplo de refatoração sugerida:\n```dart\nvoid exampleRefactor() {\n  // Exemplo de refatoração\n}\n```\n\n💡 **Dívidas Técnicas?**\nAlguma dívida técnica foi introduzida com esta alteração?"
 
         # Create the JSON payload using jq
         JSON_PAYLOAD=$(jq -n \
