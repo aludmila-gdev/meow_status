@@ -31,13 +31,13 @@ jobs:
         # Read the full diff content into a variable
         DIFF_CONTENT=$(cat changes.diff)
 
-        # Define chunk size and split the content into smaller parts
+        # Define chunk size and split the content into smaller parts (adjusted cut command)
         CHUNK_SIZE=1000
         TOTAL_LENGTH=${#DIFF_CONTENT}
 
         # Loop through each chunk and send to Gemini API
-        for (( i=0; i<$TOTAL_LENGTH; i+=$CHUNK_SIZE )); do
-          CHUNK=$(echo "$DIFF_CONTENT" | cut -c $i-$((i+CHUNK_SIZE)))
+        for (( i=1; i<=$TOTAL_LENGTH; i+=$CHUNK_SIZE )); do
+          CHUNK=$(echo "$DIFF_CONTENT" | cut -b $i-$((i+CHUNK_SIZE-1)))
 
           # Escape the CHUNK for JSON
           ESCAPED_CHUNK=$(echo "$CHUNK" | jq -Rs .)
