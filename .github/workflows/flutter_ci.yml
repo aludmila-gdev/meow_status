@@ -20,15 +20,19 @@ jobs:
       with:
         fetch-depth: 0  # Garantir que todo o histórico seja baixado
 
-    # Step 2: Set up Flutter environment
-    - name: Set up Flutter
-      uses: subosito/flutter-action@v2
-      with:
-        flutter-version: '3.24.3'
+    # Step 2: Set up Flutter environment (commented out)
+    # - name: Set up Flutter
+    #   uses: subosito/flutter-action@v2
+    #   with:
+    #     flutter-version: '3.24.3'
 
-    # Step 3: Install dependencies
-    - name: Install dependencies
-      run: flutter pub get
+    # Step 3: Install dependencies (commented out)
+    # - name: Install dependencies
+    #   run: flutter pub get
+
+    # Optional: Build APK for Android
+    # - name: Build APK
+    #   run: flutter build apk --release
 
     # Step 5: Generate filtered diff for Gemini review (only .dart files)
     - name: Generate filtered diff for Gemini review
@@ -44,8 +48,8 @@ jobs:
         # Escape the full DIFF_CONTENT for JSON
         ESCAPED_DIFF=$(echo "$DIFF_CONTENT" | jq -Rs .)
 
-        # Optimized review message with detailed prompt and emojis
-        FULL_CONTENT=$(printf "🔍 **Resumo Detalhado das Alterações do PR:**\n\n%s\n\n📝 **Boas práticas de Flutter?**\n1. O código segue boas práticas de Flutter? Cite exemplos e aponte boas práticas como widgets, state management, ou arquitetura.\n\n⚠️ **Riscos de Bugs?**\nIdentifique possíveis riscos de bugs.\n\n🛠 **Sugestões de Refatoração (com exemplos de código):**\nExemplo de refatoração sugerida:\n```dart\nvoid exampleRefactor() {\n  // Exemplo de refatoração\n}\n```\n\n💡 **Dívidas Técnicas?**\nSe houver dívidas técnicas introduzidas, especifique." "$DIFF_CONTENT")
+        # Detailed and optimized review message with specific prompts
+        FULL_CONTENT=$(printf "🔍 **Resumo Detalhado das Alterações do PR:**\n\n%s\n\n📝 **Boas práticas de Flutter?**\nO código segue boas práticas de Flutter? Cite exemplos claros e aponte práticas específicas relacionadas a widgets, state management, arquitetura, entre outros.\n\n⚠️ **Riscos de Bugs?**\nIdentifique e descreva riscos específicos com base no código fornecido, apontando os trechos onde os problemas podem ocorrer.\n\n🛠 **Sugestões de Refatoração (com exemplos de código):**\nSugira melhorias no código com exemplos práticos:\n```dart\nvoid exampleRefactor() {\n  // Exemplo de refatoração\n}\n```\n\n💡 **Dívidas Técnicas?**\nListe sempre as dívidas técnicas que podem ser introduzidas, mesmo que sejam mínimas." "$DIFF_CONTENT")
 
         # Create the JSON payload using jq
         JSON_PAYLOAD=$(jq -n \
