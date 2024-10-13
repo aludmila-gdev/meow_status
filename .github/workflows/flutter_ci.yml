@@ -34,8 +34,26 @@ jobs:
         # Escape the full DIFF_CONTENT for JSON
         ESCAPED_DIFF=$(echo "$DIFF_CONTENT" | jq -Rs .)
 
-        # Explicitly detailed and optimized review message with emojis and section emphasis
-        FULL_CONTENT=$(printf "🔍 **Resumo Detalhado das Alterações do PR (OBRIGATÓRIO):**\nDescreva **claramente** todas as alterações feitas no PR. Liste cada modificação importante.\n\n📝 **Boas práticas de Flutter (OBRIGATÓRIO):**\nAnalise as boas práticas seguidas no código. Exponha exemplos e explique com detalhes. Incluir práticas relacionadas a widgets, gerenciamento de estado e arquitetura.\n\n⚠️ **Riscos de Bugs (OBRIGATÓRIO):**\nAponte os riscos específicos de bugs no código, **citar explicitamente** os trechos que podem causar esses riscos.\n\n🛠 **Sugestões de Refatoração (com exemplos de código) (OBRIGATÓRIO):**\nSugira refatorações detalhadas, incluindo exemplos práticos:\n```dart\nvoid exampleRefactor() {\n  // Exemplo de refatoração\n}\n```\n\n💡 **Dívidas Técnicas (OBRIGATÓRIO):**\nListe as dívidas técnicas com clareza. Se não houver, fornecer algo mínimo como possíveis melhorias futuras." "$DIFF_CONTENT")
+        # Explicitly detailed and optimized review message with emojis, summary, and code snippets
+        FULL_CONTENT=$(printf "🔍 **Resumo Detalhado das Alterações do PR (OBRIGATÓRIO):**\n
+        Descreva **claramente** todas as alterações feitas no PR. Liste cada modificação importante.\n\n
+
+        📝 **Boas práticas de Flutter (OBRIGATÓRIO):**\n
+        Analise as boas práticas seguidas no código. Exponha exemplos e explique com detalhes. Incluir práticas relacionadas a widgets, gerenciamento de estado e arquitetura.\n\n
+
+        ⚠️ **Riscos de Bugs (OBRIGATÓRIO):**\n
+        Aponte os riscos específicos de bugs no código, **citar explicitamente** os trechos que podem causar esses riscos.\n\n
+
+        🛠 **Sugestões de Refatoração (OBRIGATÓRIO, com exemplos de código):**\n
+        Sugira refatorações detalhadas, incluindo exemplos práticos:\n
+        ```dart\n
+        void exampleRefactor() {\n
+          // Exemplo de refatoração para otimizar a busca de imagens\n
+        }\n
+        ```\n\n
+
+        💡 **Dívidas Técnicas (OBRIGATÓRIO):**\n
+        Liste as dívidas técnicas com clareza. Se não houver, fornecer algo mínimo como possíveis melhorias futuras." "$DIFF_CONTENT")
 
         # Create the JSON payload using jq
         JSON_PAYLOAD=$(jq -n \
