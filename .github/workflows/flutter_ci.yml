@@ -51,7 +51,8 @@ jobs:
 
         # Loop through each chunk and send to Gemini API
         for (( i=0; i<$TOTAL_LENGTH; i+=$CHUNK_SIZE )); do
-          CHUNK=$(echo "$DIFF_CONTENT" | cut -c $i-$((i+$CHUNK_SIZE)))
+          # Extract a chunk of $CHUNK_SIZE characters from $DIFF_CONTENT
+          CHUNK=${DIFF_CONTENT:i:CHUNK_SIZE}
 
           # Escape the CHUNK for JSON
           ESCAPED_CHUNK=$(echo "$CHUNK" | jq -Rs .)
