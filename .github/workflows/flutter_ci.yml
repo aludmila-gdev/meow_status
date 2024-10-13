@@ -45,7 +45,7 @@ jobs:
         ESCAPED_DIFF=$(echo "$DIFF_CONTENT" | jq -Rs .)
 
         # Optimized review message with detailed prompt and emojis
-        FULL_CONTENT=$(printf "🔍 **Resumo Detalhado das Alterações do PR:**\n\n%s\n\n📝 **Boas práticas de Flutter?**\n1. O código segue boas práticas de Flutter? Cite exemplos e aponte boas práticas como widgets, state management, ou arquitetura.\n2. **Links relevantes de documentação**: [Documentação Flutter](https://docs.flutter.dev), [Hive](https://docs.hivedb.dev), [Riverpod](https://riverpod.dev/docs/getting_started).\n\n⚠️ **Riscos de Bugs?**\nIdentifique possíveis riscos de bugs.\n\n🛠 **Sugestões de Refatoração (com exemplos de código):**\nExemplo de refatoração sugerida:\n```dart\nvoid exampleRefactor() {\n  // Exemplo de refatoração\n}\n```\n\n💡 **Dívidas Técnicas?**\nSe houver dívidas técnicas introduzidas, especifique." "$DIFF_CONTENT")
+        FULL_CONTENT=$(printf "🔍 **Resumo Detalhado das Alterações do PR:**\n\n%s\n\n📝 **Boas práticas de Flutter?**\n1. O código segue boas práticas de Flutter? Cite exemplos e aponte boas práticas como widgets, state management, ou arquitetura.\n\n⚠️ **Riscos de Bugs?**\nIdentifique possíveis riscos de bugs.\n\n🛠 **Sugestões de Refatoração (com exemplos de código):**\nExemplo de refatoração sugerida:\n```dart\nvoid exampleRefactor() {\n  // Exemplo de refatoração\n}\n```\n\n💡 **Dívidas Técnicas?**\nSe houver dívidas técnicas introduzidas, especifique." "$DIFF_CONTENT")
 
         # Create the JSON payload using jq
         JSON_PAYLOAD=$(jq -n \
