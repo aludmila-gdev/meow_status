@@ -37,9 +37,12 @@ jobs:
         # Optimized review message with a simple prompt
         FULL_CONTENT="🔍 **Resumo Detalhado das Alterações do PR:**\nResumo detalhado das alterações:\n$DIFF_CONTENT\n\n📝 **Boas práticas de Flutter:**\nO código segue boas práticas de Flutter? Cite exemplos claros de práticas específicas relacionadas a widgets, state management e arquitetura.\n\n⚠️ **Riscos de Bugs:**\nIdentifique e descreva riscos específicos de bugs com base no código fornecido.\n\n🛠 **Sugestões de Refatoração (com exemplos de código):**\nSugira melhorias no código com exemplos práticos:\n```dart\nvoid exampleRefactor() {\n  // Exemplo de refatoração\n}\n```\n\n💡 **Dívidas Técnicas:**\nListe as dívidas técnicas que podem ser introduzidas."
 
+        # Escape any problematic characters for JSON
+        ESCAPED_CONTENT=$(echo "$FULL_CONTENT" | jq -Rs .)
+
         # Create the JSON payload using jq
         JSON_PAYLOAD=$(jq -n \
-        --arg content "$FULL_CONTENT" \
+        --arg content "$ESCAPED_CONTENT" \
         '{"contents":[{"role": "user", "parts":[{"text": $content}]}]}')
 
         # Send the request to the Gemini API
