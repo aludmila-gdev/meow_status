@@ -51,8 +51,7 @@ jobs:
 
         # Loop through each chunk and send to Gemini API
         for (( i=0; i<$TOTAL_LENGTH; i+=$CHUNK_SIZE )); do
-          # Extract a chunk of $CHUNK_SIZE characters from $DIFF_CONTENT
-          CHUNK=${DIFF_CONTENT:i:CHUNK_SIZE}
+          CHUNK=$(echo "$DIFF_CONTENT" | cut -c $i-$((i+$CHUNK_SIZE)))
 
           # Escape the CHUNK for JSON
           ESCAPED_CHUNK=$(echo "$CHUNK" | jq -Rs .)
@@ -80,7 +79,7 @@ jobs:
     # Step 7: Extract Gemini response message to file
     - name: Extract Gemini response message
       run: |
-        # Ensure the response contains valid content
+        # Verifique se a resposta contém conteúdo válido
         if jq -e '.candidates[0].content.parts[0].text' gemini_response.json > /dev/null; then
           jq -r '.candidates[0].content.parts[0].text' gemini_response.json > gemini_review.md
         else
@@ -105,3 +104,7 @@ jobs:
         body: |
           ## Gemini Code Review
           ${{ env.GEMINI_REVIEW }}
+
+    # Step 10: Debug output for troubleshooting
+    - name: Debug output
+      run: echo "Gemini Review: ${{ env.GEMINI_REVIEW }}"
