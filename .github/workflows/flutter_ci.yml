@@ -20,25 +20,11 @@ jobs:
       with:
         fetch-depth: 0  # Garantir que todo o histórico seja baixado
 
-    # Step 2: Set up Flutter environment (commented out)
-    # - name: Set up Flutter
-    #   uses: subosito/flutter-action@v2
-    #   with:
-    #     flutter-version: '3.24.3'
-
-    # Step 3: Install dependencies (commented out)
-    # - name: Install dependencies
-    #   run: flutter pub get
-
-    # Optional: Build APK for Android
-    # - name: Build APK
-    #   run: flutter build apk --release
-
-    # Step 5: Generate filtered diff for Gemini review (only .dart files)
+    # Step 2: Generate filtered diff for Gemini review (only .dart files)
     - name: Generate filtered diff for Gemini review
       run: git diff origin/master...HEAD -- '*.dart' > changes.diff
 
-    # Step 6: Send the full diff to Gemini in one request
+    # Step 3: Send the full diff to Gemini in one request
     - name: Send full diff to Gemini
       id: gemini_review
       run: |
@@ -67,7 +53,7 @@ jobs:
         # Save the response to a file
         echo "$RESPONSE" > gemini_response.json
 
-    # Step 7: Extract Gemini response message to file
+    # Step 4: Extract Gemini response message to file
     - name: Extract Gemini response message
       run: |
         # Verifique se a resposta contém conteúdo válido
@@ -77,7 +63,7 @@ jobs:
           echo "No valid content in response" > gemini_review.md
         fi
 
-    # Step 8: Load the Gemini response into an environment variable
+    # Step 5: Load the Gemini response into an environment variable
     - name: Load Gemini response into variable
       id: load_gemini_response
       run: |
@@ -86,7 +72,7 @@ jobs:
         echo "$GEMINI_REVIEW" >> $GITHUB_ENV
         echo "EOF" >> $GITHUB_ENV
 
-    # Step 9: Post Gemini review as a comment on the pull request
+    # Step 6: Post Gemini review as a comment on the pull request
     - name: Post Gemini review comment
       uses: peter-evans/create-or-update-comment@v1
       with:
