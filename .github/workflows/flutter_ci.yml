@@ -48,8 +48,8 @@ jobs:
         # Escape the full DIFF_CONTENT for JSON
         ESCAPED_DIFF=$(echo "$DIFF_CONTENT" | jq -Rs .)
 
-        # Optimized review message
-        FULL_CONTENT="Análise de código Flutter:\n\nAlterações:\n$DIFF_CONTENT\n\nFeedback:\n1. Boas práticas de Flutter?\n2. Resumo das alterações.\n3. Riscos de bugs?\n4. Sugestões de refatoração.\n5. Dívidas técnicas?"
+        # Optimized review message with updated structure and emojis
+        FULL_CONTENT="🚀 **Resumo das Alterações:**\n\n$DIFF_CONTENT\n\n📝 **Boas práticas de Flutter?**\n1. O código segue boas práticas de Flutter?\n2. Uso correto de state management?\n3. Nomes de variáveis consistentes?\n\n⚠️ **Riscos de Bugs?**\nIdentificar riscos com a mudança.\n\n🛠 **Sugestões de Refatoração (com exemplo):**\nSe possível, incluir sugestões de refatoração com exemplos de código.\n\n💡 **Dívidas Técnicas?**\nHá alguma dívida técnica que precisa ser observada?"
 
         # Create the JSON payload using jq
         JSON_PAYLOAD=$(jq -n \
@@ -93,5 +93,5 @@ jobs:
         token: ${{ secrets.GITHUB_TOKEN }}
         issue-number: ${{ github.event.pull_request.number }}
         body: |
-          ## Gemini Code Review
+          ## Refined Gemini Code Review
           ${{ env.GEMINI_REVIEW }}
