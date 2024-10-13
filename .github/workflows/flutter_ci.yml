@@ -36,24 +36,24 @@ jobs:
 
         # Explicitly detailed and optimized review message with emojis, summary, and code snippets
         FULL_CONTENT=$(printf "🔍 **Resumo Detalhado das Alterações do PR (OBRIGATÓRIO):**\n
-        Descreva **claramente** todas as alterações feitas no PR. Liste cada modificação importante.\n\n
+        Descreva **claramente** todas as alterações feitas no PR e adicione detalhes específicos como widgets, gerenciamento de estado, e funcionalidades criadas ou removidas.\n\n
 
-        📝 **Boas práticas de Flutter (OBRIGATÓRIO):**\n
-        Analise as boas práticas seguidas no código. Exponha exemplos e explique com detalhes. Incluir práticas relacionadas a widgets, gerenciamento de estado e arquitetura.\n\n
+        📝 **Boas práticas de Flutter (OBRIGATÓRIO, inclua emojis):**\n
+        Analise as boas práticas seguidas no código. Exponha exemplos claros relacionados a widgets, state management, e arquitetura, com emojis para destacar as boas práticas.\n\n
 
-        ⚠️ **Riscos de Bugs (OBRIGATÓRIO):**\n
-        Aponte os riscos específicos de bugs no código, **citar explicitamente** os trechos que podem causar esses riscos.\n\n
+        ⚠️ **Riscos de Bugs (OBRIGATÓRIO, inclua emojis):**\n
+        Aponte os riscos específicos de bugs no código e cite explicitamente os trechos que podem causar esses riscos. Use emojis para destacar os riscos críticos.\n\n
 
-        🛠 **Sugestões de Refatoração (OBRIGATÓRIO, com exemplos de código):**\n
-        Sugira refatorações detalhadas, incluindo exemplos práticos:\n
+        🛠 **Sugestões de Refatoração (OBRIGATÓRIO, com exemplos de código e emojis):**\n
+        Sugira refatorações detalhadas, incluindo exemplos práticos. Use emojis para destacar a importância das sugestões:\n
         ```dart\n
         void exampleRefactor() {\n
           // Exemplo de refatoração para otimizar a busca de imagens\n
         }\n
         ```\n\n
 
-        💡 **Dívidas Técnicas (OBRIGATÓRIO):**\n
-        Liste as dívidas técnicas com clareza. Se não houver, fornecer algo mínimo como possíveis melhorias futuras." "$DIFF_CONTENT")
+        💡 **Dívidas Técnicas (OBRIGATÓRIO, inclua emojis):**\n
+        Liste as dívidas técnicas com clareza. Se não houver, forneça algo mínimo como possíveis melhorias futuras." "$DIFF_CONTENT")
 
         # Create the JSON payload using jq
         JSON_PAYLOAD=$(jq -n \
