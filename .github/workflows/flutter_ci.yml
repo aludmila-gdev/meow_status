@@ -35,7 +35,7 @@ jobs:
         ESCAPED_DIFF=$(echo "$DIFF_CONTENT" | jq -Rs .)
 
         # Optimized review message with emojis and detailed prompts
-        FULL_CONTENT=$(printf "🔍 **Resumo Detalhado das Alterações do PR:**\n\n%s\n\n📝 **Boas práticas de Flutter?**\nO código segue boas práticas de Flutter? Cite exemplos claros e aponte práticas específicas relacionadas a widgets, state management, arquitetura, entre outros.\n\n⚠️ **Riscos de Bugs?**\nIdentifique e descreva riscos específicos com base no código fornecido, apontando os trechos onde os problemas podem ocorrer.\n\n🛠 **Sugestões de Refatoração (com exemplos de código):**\nSugira melhorias no código com exemplos práticos:\n```dart\nvoid exampleRefactor() {\n  // Exemplo de refatoração\n}\n```\n\n💡 **Dívidas Técnicas?**\nListe sempre as dívidas técnicas que podem ser introduzidas, mesmo que sejam mínimas." "$DIFF_CONTENT")
+        FULL_CONTENT=$(printf "🔍 **Resumo Detalhado das Alterações do PR:**\n\n%s\n\n📝 **Boas práticas de Flutter?**\nO código segue boas práticas de Flutter? Cite exemplos claros e aponte práticas específicas relacionadas a widgets, state management, arquitetura, entre outros.\n\n⚠️ **Riscos de Bugs?**\nIdentifique e descreva riscos específicos com base no código fornecido, apontando os trechos onde os problemas podem ocorrer.\n\n🛠 **Sugestões de Refatoração (com exemplos de código):**\nSugira melhorias no código com exemplos práticos:\n\`\`\`dart\nvoid exampleRefactor() {\n  // Exemplo de refatoração\n}\n\`\`\`\n\n💡 **Dívidas Técnicas?**\nListe sempre as dívidas técnicas que podem ser introduzidas, mesmo que sejam mínimas." "$DIFF_CONTENT")
 
         # Create the JSON payload using jq
         JSON_PAYLOAD=$(jq -n \
@@ -64,7 +64,7 @@ jobs:
         fi
 
     # Step 5: Load the Gemini response into an environment variable
-    - name: Load Gemini response into variable
+    - name: Load the Gemini response into a variable
       id: load_gemini_response
       run: |
         GEMINI_REVIEW=$(cat gemini_review.md)
@@ -72,7 +72,7 @@ jobs:
         echo "$GEMINI_REVIEW" >> $GITHUB_ENV
         echo "EOF" >> $GITHUB_ENV
 
-    # Step 6: Post Gemini review as a comment on the pull request
+    # Step 6: Post the Gemini review as a comment on the pull request
     - name: Post Gemini review comment
       uses: peter-evans/create-or-update-comment@v1
       with:
