@@ -30,6 +30,10 @@ jobs:
     - name: Install dependencies
       run: flutter pub get
 
+    # Step 4: Run tests 
+    - name: Run tests
+      run: flutter test
+
     # Optional: Build APK for Android
     # - name: Build APK
     #   run: flutter build apk --release
@@ -38,40 +42,43 @@ jobs:
     - name: Generate diff for Gemini review
       run: git diff origin/master...HEAD > changes.diff
 
-    # Step 6: Request Gemini code review
-    - name: Request Gemini code review
+    # Step 6: Split the diff into chunks and send to Gemini
+    - name: Send diff to Gemini in chunks
       id: gemini_review
       run: |
         # Read the full diff content into a variable
         DIFF_CONTENT=$(cat changes.diff)
 
-        # Escape the DIFF_CONTENT for JSON
-        ESCAPED_DIFF_CONTENT=$(echo "$DIFF_CONTENT" | jq -Rs .)
+        # Split the diff into smaller chunks of 1000 characters
+        CHUNK_SIZE=1000
+        TOTAL_LENGTH=${#DIFF_CONTENT}
 
-        # Optimized review message
-        FULL_CONTENT="Análise de código Flutter:\n\nAlterações:\n$DIFF_CONTENT\n\nFeedback:\n1. Boas práticas de Flutter?\n2. Resumo das alterações.\n3. Riscos de bugs?\n4. Sugestões de refatoração.\n5. Dívidas técnicas?"
+        # Loop through each chunk and send to Gemini API
+        for (( i=0; i<$TOTAL_LENGTH; i+=$CHUNK_SIZE )); do
+          CHUNK=$(echo "$DIFF_CONTENT" | cut -c $i-$((i+$CHUNK_SIZE)))
 
-        # Create the JSON payload using jq
-        JSON_PAYLOAD=$(jq -n \
-        --arg content "$FULL_CONTENT" \
-        '{"contents":[{"role": "user", "parts":[{"text": $content}]}]}')
+          # Escape the CHUNK for JSON
+          ESCAPED_CHUNK=$(echo "$CHUNK" | jq -Rs .)
 
-        # Send the request to the Gemini API
-        API_KEY=${{ secrets.GOOGLE_GEMINI_API_KEY }}
-        RESPONSE=$(curl -H 'Content-Type: application/json' \
-          -d "$JSON_PAYLOAD" \
-          "https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=${API_KEY}")
+          # Optimized review message
+          FULL_CONTENT="Análise de código Flutter:\n\nAlterações:\n$CHUNK\n\nFeedback:\n1. Boas práticas de Flutter?\n2. Resumo das alterações.\n3. Riscos de bugs?\n4. Sugestões de refatoração.\n5. Dívidas técnicas?"
 
-        echo "API response: $RESPONSE"
+          # Create the JSON payload using jq
+          JSON_PAYLOAD=$(jq -n \
+          --arg content "$FULL_CONTENT" \
+          '{"contents":[{"role": "user", "parts":[{"text": $content}]}]}')
 
-        # Check if the response contains an error
-        if echo "$RESPONSE" | grep -q '"error":'; then
-          echo "Error in Gemini API response"
-          exit 1
-        else
+          # Send the request to the Gemini API
+          API_KEY=${{ secrets.GOOGLE_GEMINI_API_KEY }}
+          RESPONSE=$(curl -H 'Content-Type: application/json' \
+            -d "$JSON_PAYLOAD" \
+            "https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=${API_KEY}")
+
+          echo "API response: $RESPONSE"
+
           # Save the response to a file
-          echo "$RESPONSE" > gemini_response.json
-        fi
+          echo "$RESPONSE" >> gemini_response.json
+        done
 
     # Step 7: Extract Gemini response message to file
     - name: Extract Gemini response message
