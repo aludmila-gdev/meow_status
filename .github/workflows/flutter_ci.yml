@@ -86,38 +86,21 @@ jobs:
           echo "No valid content in response" > gemini_review.md
         fi
 
-    # Step 8: Refine the Gemini review before posting
-    - name: Refine Gemini review
+    # Step 8: Load the Gemini response into an environment variable
+    - name: Load Gemini response into variable
+      id: load_gemini_response
       run: |
         GEMINI_REVIEW=$(cat gemini_review.md)
-
-        # Send GEMINI_REVIEW to the Gemini API for refinement
-        REFINED_PAYLOAD=$(jq -n \
-        --arg content "$GEMINI_REVIEW" \
-        '{"contents":[{"role": "user", "parts":[{"text": $content}]}]}')
-
-        API_KEY=${{ secrets.GOOGLE_GEMINI_API_KEY }}
-        REFINED_RESPONSE=$(curl -H 'Content-Type: application/json' \
-          -d "$REFINED_PAYLOAD" \
-          "https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=${API_KEY}")
-
-        echo "$REFINED_RESPONSE" > refined_gemini_review.md
-
-    # Step 9: Load the refined Gemini response into an environment variable
-    - name: Load refined Gemini response into variable
-      id: load_refined_gemini_response
-      run: |
-        REFINED_REVIEW=$(cat refined_gemini_review.md)
-        echo "REFINED_REVIEW<<EOF" >> $GITHUB_ENV
-        echo "$REFINED_REVIEW" >> $GITHUB_ENV
+        echo "GEMINI_REVIEW<<EOF" >> $GITHUB_ENV
+        echo "$GEMINI_REVIEW" >> $GITHUB_ENV
         echo "EOF" >> $GITHUB_ENV
 
-    # Step 10: Post the refined Gemini review as a comment on the pull request
-    - name: Post refined Gemini review comment
+    # Step 9: Post Gemini review as a comment on the pull request
+    - name: Post Gemini review comment
       uses: peter-evans/create-or-update-comment@v1
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
         issue-number: ${{ github.event.pull_request.number }}
         body: |
-          ## Refined Gemini Code Review
-          ${{ env.REFINED_REVIEW }}
+          ## Gemini Code Review
+          ${{ env.GEMINI_REVIEW }}
