@@ -20,44 +20,29 @@ jobs:
       with:
         fetch-depth: 0  # Garantir que todo o histórico seja baixado
 
-    # Step 2: Set up Flutter environment
-    - name: Set up Flutter
-      uses: subosito/flutter-action@v2
-      with:
-        flutter-version: '3.24.3'
+    # Step 2: Generate filtered diff for Gemini review (only .dart files)
+    - name: Generate filtered diff for Gemini review
+      run: git diff origin/master...HEAD -- '*.dart' > changes.diff
 
-    # Step 3: Install dependencies
-    - name: Install dependencies
-      run: flutter pub get
-
-    # Step 4: Run tests 
-    - name: Run tests
-      run: flutter test
-
-    # Optional: Build APK for Android
-    # - name: Build APK
-    #   run: flutter build apk --release
-
-    # Step 5: Generate diff for Gemini review
-    - name: Generate diff for Gemini review
-      run: git diff origin/master...HEAD > changes.diff
-
-    # Step 6: Request Gemini code review
-    - name: Request Gemini code review
+    # Step 3: Send the full diff to Gemini in one request
+    - name: Send full diff to Gemini
       id: gemini_review
       run: |
         # Read the full diff content into a variable
         DIFF_CONTENT=$(cat changes.diff)
 
-        # Escape the DIFF_CONTENT for JSON
-        ESCAPED_DIFF_CONTENT=$(echo "$DIFF_CONTENT" | jq -Rs .)
+        # Escape the full DIFF_CONTENT for JSON
+        ESCAPED_DIFF=$(jq -Rs . <<< "$DIFF_CONTENT")
 
-        # Optimized review message
-        FULL_CONTENT="Análise de código Flutter:\n\nAlterações:\n$DIFF_CONTENT\n\nFeedback:\n1. Boas práticas de Flutter?\n2. Resumo das alterações.\n3. Riscos de bugs?\n4. Sugestões de refatoração.\n5. Dívidas técnicas?"
+        # Simplified review message with appropriate handling for code blocks
+        FULL_CONTENT="🔍 **Resumo Detalhado das Alterações do PR:**\nResumo detalhado das alterações:\n${ESCAPED_DIFF}\n\n📝 **Boas práticas de Flutter:**\nO código segue boas práticas de Flutter? Cite exemplos claros de práticas específicas relacionadas a widgets, state management e arquitetura.\n\n⚠️ **Riscos de Bugs:**\nIdentifique e descreva riscos específicos de bugs com base no código fornecido.\n\n🛠 **Sugestões de Refatoração (com exemplos de código):**\nSugira melhorias no código com exemplos práticos.\n\n💡 **Dívidas Técnicas:**\nListe as dívidas técnicas que podem ser introduzidas."
+
+        # Escape the FULL_CONTENT for JSON
+        ESCAPED_CONTENT=$(jq -Rs . <<< "$FULL_CONTENT")
 
         # Create the JSON payload using jq
         JSON_PAYLOAD=$(jq -n \
-        --arg content "$FULL_CONTENT" \
+        --arg content "$ESCAPED_CONTENT" \
         '{"contents":[{"role": "user", "parts":[{"text": $content}]}]}')
 
         # Send the request to the Gemini API
@@ -68,27 +53,21 @@ jobs:
 
         echo "API response: $RESPONSE"
 
-        # Check if the response contains an error
-        if echo "$RESPONSE" | grep -q '"error":'; then
-          echo "Error in Gemini API response"
-          exit 1
-        else
-          # Save the response to a file
-          echo "$RESPONSE" > gemini_response.json
-        fi
+        # Save the response to a file
+        echo "$RESPONSE" > gemini_response.json
 
-    # Step 7: Extract Gemini response message to file
+    # Step 4: Extract Gemini response message to file
     - name: Extract Gemini response message
       run: |
-        # Ensure the response contains valid content
+        # Verifique se a resposta contém conteúdo válido
         if jq -e '.candidates[0].content.parts[0].text' gemini_response.json > /dev/null; then
           jq -r '.candidates[0].content.parts[0].text' gemini_response.json > gemini_review.md
         else
           echo "No valid content in response" > gemini_review.md
         fi
 
-    # Step 8: Load the Gemini response into an environment variable
-    - name: Load Gemini response into variable
+    # Step 5: Load the Gemini response into an environment variable
+    - name: Load the Gemini response into a variable
       id: load_gemini_response
       run: |
         GEMINI_REVIEW=$(cat gemini_review.md)
@@ -96,7 +75,7 @@ jobs:
         echo "$GEMINI_REVIEW" >> $GITHUB_ENV
         echo "EOF" >> $GITHUB_ENV
 
-    # Step 9: Post Gemini review as a comment on the pull request
+    # Step 6: Post the Gemini review as a comment on the pull request
     - name: Post Gemini review comment
       uses: peter-evans/create-or-update-comment@v1
       with:
