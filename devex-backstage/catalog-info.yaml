@@ -1,0 +1,12 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: tech-foundations-hub
+  description: Tech Foundations Hub - A centralized documentation and tooling platform for foundational engineering practices.
+  annotations:
+    github.com/project-slug: your-org/tech-foundations-hub
+    backstage.io/techdocs-ref: dir:.
+spec:
+  type: website
+  owner: your-team@example.com
+  lifecycle: production
