@@ -11,4 +11,4 @@ spec:
     picture: https://example.com/groups/bu-infrastructure.jpeg
   parent: ops
   children: [backstage, other]
-  members: [jdoe]
+  members: [aludmila-gdev]
