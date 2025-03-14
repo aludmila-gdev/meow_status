@@ -1,0 +1,38 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: meow-status
+  description: A service that provides HTTP status code-based cat images.
+  annotations:
+    github.com/project-slug: your-org/meow-status
+    backstage.io/techdocs-ref: dir:.
+    circleci.com/project-slug: github/your-org/meow-status
+    sonarqube.org/project-key: meow-status
+  tags:
+    - api
+    - http-status
+    - cats
+    - automation
+spec:
+  type: service
+  lifecycle: experimental
+  owner: devex-team
+  system: meow-status
+  providesApis:
+    - meow-status-api
+  consumesApis:
+    - github-external-api
+  links:
+    - url: https://github.com/your-org/meow-status
+      title: GitHub Repository
+    - url: https://backstage.yourcompany.com/catalog/meow-status
+      title: Backstage Catalog
+  dependsOn:
+    - component:backstage-core
+    - component:github-api
+  api:
+    - name: meow-status-api
+      type: openapi
+      definition:
+        $text: ./openapi.yaml
+      lifecycle: experimental
