@@ -23,13 +23,10 @@ spec:
   consumesApis:
     - github-external-api
   links:
-    - url: https://github.com/your-org/meow-status
+    - url: https://github.com/aludmila-gdev/meow_status
       title: GitHub Repository
     - url: https://backstage.yourcompany.com/catalog/meow-status
       title: Backstage Catalog
-  dependsOn:
-    - component:backstage-core
-    - component:github-api
   api:
     - name: meow-status-api
       type: openapi
