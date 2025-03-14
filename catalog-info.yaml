@@ -1,30 +1,8 @@
 apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
-    name: a-python-library
-    description: A Python Library
-    annotations:
-        backstage.io/techdocs-ref: dir:.
-        github.com/project-slug: pep8speaks-org/pep8speaks
-    tags:
-        - python
-    links:
-        - url: https://admin.example-org.com
-          title: Admin Dashboard
-          icon: dashboard
-          type: admin-dashboard
+  name: backstage-devex-test
 spec:
-    type: service
-    lifecycle: production
-    owner: idpadmins
-    system: project-x
-
----
-apiVersion: backstage.io/v1alpha1
-kind: System
-metadata:
-    name: project-x
-    description: Handy tools to keep artists in the loop
-spec:
-    owner: artist-relations-team
-    domain: artists
+  type: other
+  lifecycle: unknown
+  owner: rewards
