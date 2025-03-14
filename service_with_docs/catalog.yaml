@@ -3,7 +3,7 @@ kind: Component
 metadata:
   name: service-with-docs
   description: An example of service with docs
-  backstage.io/techdocs-ref:dir:.
+  backstage.io/techdocs-ref: dir:.
 spec:
   type: website
   lifecycle: production
