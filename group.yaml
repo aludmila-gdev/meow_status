@@ -1,10 +1,10 @@
 apiVersion: backstage.io/v1alpha1
 kind: Group
 metadata:
-  name: infrastructure
+  name: devex-admins
   description: The infra business unit
 spec:
-  type: business-unit
+  type: team
   profile:
     displayName: Infrastructure
     email: infrastructure@example.com
