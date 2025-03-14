@@ -1,8 +1,9 @@
 apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
-  name: backstage-devex-test
+  name: meow_status
+  annotations:
+    github.com/project-slug: aludmila-gdev/meow_status
 spec:
   type: other
   lifecycle: unknown
-  owner: rewards
