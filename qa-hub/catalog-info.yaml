@@ -1,0 +1,21 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: qa-hub
+  description: QA Hub - A centralized hub for quality assurance practices, test automation, and validation strategies.
+  annotations:
+    github.com/project-slug: your-org/qa-hub
+    backstage.io/techdocs-ref: dir:.
+spec:
+  type: website
+  lifecycle: production
+  owner: qa-team
+  system: engineering-platform
+  dependsOn:
+    - component:default/tech-foundations-hub
+    - resource:default/test-data-service
+  dependencyOf:
+    - component:default/developer-portal
+    - component:default/ci-cd-pipeline
+  providesApis:
+    - api:default/qa-automation-api
