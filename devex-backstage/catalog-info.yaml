@@ -8,5 +8,14 @@ metadata:
     backstage.io/techdocs-ref: dir:.
 spec:
   type: website
-  owner: your-team@example.com
   lifecycle: production
+  owner: tech-foundations-team
+  system: engineering-platform
+  dependsOn:
+    - resource:default/infra-db
+    - resource:default/logging-service
+  dependencyOf:
+    - component:default/developer-portal
+    - component:default/ci-cd-pipeline
+  providesApis:
+    - api:default/tech-documentation-api
