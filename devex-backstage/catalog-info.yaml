@@ -12,10 +12,14 @@ spec:
   owner: tech-foundations-team
   system: engineering-platform
   dependsOn:
+    - component:default/qa-hub
+    - component:default/security-hub
+    - component:default/devex-hub
     - resource:default/infra-db
     - resource:default/logging-service
   dependencyOf:
     - component:default/developer-portal
     - component:default/ci-cd-pipeline
+    - component:default/platform-engineering-hub
   providesApis:
     - api:default/tech-documentation-api
