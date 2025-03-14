@@ -1,35 +1,30 @@
 apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
-  name: meow-status
-  description: A service that provides HTTP status code-based cat images.
-  annotations:
-    github.com/project-slug: your-org/meow-status
-    backstage.io/techdocs-ref: dir:.
-    circleci.com/project-slug: github/your-org/meow-status
-    sonarqube.org/project-key: meow-status
-  tags:
-    - api
-    - http-status
-    - cats
-    - automation
+    name: a-python-library
+    description: A Python Library
+    annotations:
+        backstage.io/techdocs-ref: dir:.
+        github.com/project-slug: pep8speaks-org/pep8speaks
+    tags:
+        - python
+    links:
+        - url: https://admin.example-org.com
+          title: Admin Dashboard
+          icon: dashboard
+          type: admin-dashboard
 spec:
-  type: service
-  lifecycle: experimental
-  owner: devex-team
-  system: meow-status
-  providesApis:
-    - meow-status-api
-  consumesApis:
-    - github-external-api
-  links:
-    - url: https://github.com/aludmila-gdev/meow_status
-      title: GitHub Repository
-    - url: https://backstage.yourcompany.com/catalog/meow-status
-      title: Backstage Catalog
-  api:
-    - name: meow-status-api
-      type: openapi
-      definition:
-        $text: ./openapi.yaml
-      lifecycle: experimental
+    type: service
+    lifecycle: production
+    owner: idpadmins
+    system: project-x
+
+---
+apiVersion: backstage.io/v1alpha1
+kind: System
+metadata:
+    name: project-x
+    description: Handy tools to keep artists in the loop
+spec:
+    owner: artist-relations-team
+    domain: artists
