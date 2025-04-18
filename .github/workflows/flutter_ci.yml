@@ -42,7 +42,7 @@ jobs:
         run: |
           DIFF_CONTENT=$(cat changes.diff)
           ESCAPED_DIFF=$(jq -Rs . <<< "$DIFF_CONTENT")
-          FULL_CONTENT="🔍 **Resumo Detalhado das Alterações do PR:**\nResumo detalhado das alterações:\n${ESCAPED_DIFF}\n\n📝 **Boas práticas de Flutter:**\nO código segue boas práticas de Flutter? Cite exemplos claros de práticas específicas relacionadas a widgets, state management e arquitetura.\n\n⚠️ **Riscos de Bugs:**\nIdentifique e descreva riscos específicos de bugs com base no código fornecido.\n\n🛠 **Sugestões de Refatoração (com exemplos de código):**\nSugira melhorias no código com exemplos práticos.\n\n💡 **Dívidas Técnicas:**\nListe as dívidas técnicas que podem ser introduzidas."
+          FULL_CONTENT="$(cat .github/gemini_review_prompt.txt)\n${ESCAPED_DIFF}"
           ESCAPED_CONTENT=$(jq -Rs . <<< "$FULL_CONTENT")
           JSON_PAYLOAD=$(jq -n --arg content "$ESCAPED_CONTENT" '{"contents":[{"role": "user", "parts":[{"text": $content}]}]}')
           API_KEY=${{ secrets.GEMINI_API_KEY }}
