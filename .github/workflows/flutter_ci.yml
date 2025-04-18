@@ -45,7 +45,7 @@ jobs:
           FULL_CONTENT="🔍 **Resumo Detalhado das Alterações do PR:**\nResumo detalhado das alterações:\n${ESCAPED_DIFF}\n\n📝 **Boas práticas de Flutter:**\nO código segue boas práticas de Flutter? Cite exemplos claros de práticas específicas relacionadas a widgets, state management e arquitetura.\n\n⚠️ **Riscos de Bugs:**\nIdentifique e descreva riscos específicos de bugs com base no código fornecido.\n\n🛠 **Sugestões de Refatoração (com exemplos de código):**\nSugira melhorias no código com exemplos práticos.\n\n💡 **Dívidas Técnicas:**\nListe as dívidas técnicas que podem ser introduzidas."
           ESCAPED_CONTENT=$(jq -Rs . <<< "$FULL_CONTENT")
           JSON_PAYLOAD=$(jq -n --arg content "$ESCAPED_CONTENT" '{"contents":[{"role": "user", "parts":[{"text": $content}]}]}')
-          API_KEY=${{ secrets.GOOGLE_GEMINI_API_KEY }}
+          API_KEY=${{ secrets.GEMINI_API_KEY }}
           RESPONSE=$(curl -H 'Content-Type: application/json' -d "$JSON_PAYLOAD" "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}")
           echo "API response: $RESPONSE"
           echo "$RESPONSE" > gemini_response.json
