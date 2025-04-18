@@ -46,7 +46,7 @@ jobs:
           ESCAPED_CONTENT=$(jq -Rs . <<< "$FULL_CONTENT")
           JSON_PAYLOAD=$(jq -n --arg content "$ESCAPED_CONTENT" '{"contents":[{"role": "user", "parts":[{"text": $content}]}]}')
           API_KEY=${{ secrets.GOOGLE_GEMINI_API_KEY }}
-          RESPONSE=$(curl -H 'Content-Type: application/json' -d "$JSON_PAYLOAD" "https://generativelanguage.googleapis.com/v1/models/gemini-pro-1.5:generateContent?key=${API_KEY}")
+          RESPONSE=$(curl -H 'Content-Type: application/json' -d "$JSON_PAYLOAD" "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}")
           echo "API response: $RESPONSE"
           echo "$RESPONSE" > gemini_response.json
 
