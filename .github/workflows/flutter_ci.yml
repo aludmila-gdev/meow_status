@@ -14,73 +14,65 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    # Step 1: Checkout the repository code with full history
-    - name: Checkout code
-      uses: actions/checkout@v2
-      with:
-        fetch-depth: 0  # Garantir que todo o histórico seja baixado
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
 
-    # Step 2: Generate filtered diff for Gemini review (only .dart files)
-    - name: Generate filtered diff for Gemini review
-      run: git diff origin/master...HEAD -- '*.dart' > changes.diff
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 'stable'
 
-    # Step 3: Send the full diff to Gemini in one request
-    - name: Send full diff to Gemini
-      id: gemini_review
-      run: |
-        # Read the full diff content into a variable
-        DIFF_CONTENT=$(cat changes.diff)
+      - name: Install dependencies
+        run: flutter pub get
 
-        # Escape the full DIFF_CONTENT for JSON
-        ESCAPED_DIFF=$(jq -Rs . <<< "$DIFF_CONTENT")
+      - name: Run tests with coverage
+        run: flutter test --coverage
 
-        # Simplified review message with appropriate handling for code blocks
-        FULL_CONTENT="🔍 **Resumo Detalhado das Alterações do PR:**\nResumo detalhado das alterações:\n${ESCAPED_DIFF}\n\n📝 **Boas práticas de Flutter:**\nO código segue boas práticas de Flutter? Cite exemplos claros de práticas específicas relacionadas a widgets, state management e arquitetura.\n\n⚠️ **Riscos de Bugs:**\nIdentifique e descreva riscos específicos de bugs com base no código fornecido.\n\n🛠 **Sugestões de Refatoração (com exemplos de código):**\nSugira melhorias no código com exemplos práticos.\n\n💡 **Dívidas Técnicas:**\nListe as dívidas técnicas que podem ser introduzidas."
+      - name: Upload test coverage result
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage-report
+          path: coverage/lcov.info
 
-        # Escape the FULL_CONTENT for JSON
-        ESCAPED_CONTENT=$(jq -Rs . <<< "$FULL_CONTENT")
+      - name: Generate filtered diff for Gemini review
+        run: git diff origin/master...HEAD -- '*.dart' > changes.diff
 
-        # Create the JSON payload using jq
-        JSON_PAYLOAD=$(jq -n \
-        --arg content "$ESCAPED_CONTENT" \
-        '{"contents":[{"role": "user", "parts":[{"text": $content}]}]}')
+      - name: Send full diff to Gemini
+        id: gemini_review
+        run: |
+          DIFF_CONTENT=$(cat changes.diff)
+          ESCAPED_DIFF=$(jq -Rs . <<< "$DIFF_CONTENT")
+          FULL_CONTENT="🔍 **Resumo Detalhado das Alterações do PR:**\nResumo detalhado das alterações:\n${ESCAPED_DIFF}\n\n📝 **Boas práticas de Flutter:**\nO código segue boas práticas de Flutter? Cite exemplos claros de práticas específicas relacionadas a widgets, state management e arquitetura.\n\n⚠️ **Riscos de Bugs:**\nIdentifique e descreva riscos específicos de bugs com base no código fornecido.\n\n🛠 **Sugestões de Refatoração (com exemplos de código):**\nSugira melhorias no código com exemplos práticos.\n\n💡 **Dívidas Técnicas:**\nListe as dívidas técnicas que podem ser introduzidas."
+          ESCAPED_CONTENT=$(jq -Rs . <<< "$FULL_CONTENT")
+          JSON_PAYLOAD=$(jq -n --arg content "$ESCAPED_CONTENT" '{"contents":[{"role": "user", "parts":[{"text": $content}]}]}')
+          API_KEY=${{ secrets.GOOGLE_GEMINI_API_KEY }}
+          RESPONSE=$(curl -H 'Content-Type: application/json' -d "$JSON_PAYLOAD" "https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=${API_KEY}")
+          echo "API response: $RESPONSE"
+          echo "$RESPONSE" > gemini_response.json
 
-        # Send the request to the Gemini API
-        API_KEY=${{ secrets.GOOGLE_GEMINI_API_KEY }}
-        RESPONSE=$(curl -H 'Content-Type: application/json' \
-          -d "$JSON_PAYLOAD" \
-          "https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=${API_KEY}")
+      - name: Extract Gemini response message
+        run: |
+          if jq -e '.candidates[0].content.parts[0].text' gemini_response.json > /dev/null; then
+            jq -r '.candidates[0].content.parts[0].text' gemini_response.json > gemini_review.md
+          else
+            echo "No valid content in response" > gemini_review.md
+          fi
 
-        echo "API response: $RESPONSE"
+      - name: Load the Gemini response into a variable
+        id: load_gemini_response
+        run: |
+          GEMINI_REVIEW=$(cat gemini_review.md)
+          echo "GEMINI_REVIEW<<EOF" >> $GITHUB_ENV
+          echo "$GEMINI_REVIEW" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
 
-        # Save the response to a file
-        echo "$RESPONSE" > gemini_response.json
-
-    # Step 4: Extract Gemini response message to file
-    - name: Extract Gemini response message
-      run: |
-        # Verifique se a resposta contém conteúdo válido
-        if jq -e '.candidates[0].content.parts[0].text' gemini_response.json > /dev/null; then
-          jq -r '.candidates[0].content.parts[0].text' gemini_response.json > gemini_review.md
-        else
-          echo "No valid content in response" > gemini_review.md
-        fi
-
-    # Step 5: Load the Gemini response into an environment variable
-    - name: Load the Gemini response into a variable
-      id: load_gemini_response
-      run: |
-        GEMINI_REVIEW=$(cat gemini_review.md)
-        echo "GEMINI_REVIEW<<EOF" >> $GITHUB_ENV
-        echo "$GEMINI_REVIEW" >> $GITHUB_ENV
-        echo "EOF" >> $GITHUB_ENV
-
-    # Step 6: Post the Gemini review as a comment on the pull request
-    - name: Post Gemini review comment
-      uses: peter-evans/create-or-update-comment@v1
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
-        issue-number: ${{ github.event.pull_request.number }}
-        body: |
-          ## Gemini Code Review
-          ${{ env.GEMINI_REVIEW }}
+      - name: Post Gemini review comment
+        uses: peter-evans/create-or-update-comment@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            ## Gemini Code Review
+            ${{ env.GEMINI_REVIEW }}
