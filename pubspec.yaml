@@ -1,37 +1,32 @@
 name: meow_status
-description: A Flutter app for displaying cat images along with cute quotes.
+description: "A new Flutter project."
 publish_to: 'none'
-
-version: 1.0.0+1
+version: 0.1.0
 
 environment:
-  sdk: '>=3.0.6 <4.0.0'
+  sdk: ^3.7.2
 
 dependencies:
   flutter:
     sdk: flutter
-  cupertino_icons: ^1.0.2
-
-  # State management with Riverpod
-  flutter_riverpod: ^2.0.0
-
-  # HTTP client for making API requests
-  dio: ^5.0.0
-
-  # Local storage for storing cute cat quotes
-  hive: ^2.0.0
-  hive_flutter: ^1.0.0
+  colorist_ui: ^0.1.2
+  flutter_riverpod: ^2.6.1
+  riverpod_annotation: ^2.6.1
+  firebase_core: ^3.13.0
+  firebase_vertexai: ^1.5.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-
-  # Recommended lints
   flutter_lints: ^5.0.0
-
-  # Integration testing
-  integration_test:
-    sdk: flutter
+  build_runner: ^2.4.15
+  riverpod_generator: ^2.6.5
+  riverpod_lint: ^2.6.5
+  json_serializable: ^6.9.4
+  custom_lint: ^0.7.5
 
 flutter:
   uses-material-design: true
+
+  assets:
+    - assets/

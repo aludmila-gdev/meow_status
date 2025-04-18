@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "226118697411",
+    "project_id": "meow-status-gemini",
+    "storage_bucket": "meow-status-gemini.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:226118697411:android:ba6c4e8d6a8857586e3d76",
+        "android_client_info": {
+          "package_name": "com.example.meow_status"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA-tyZV1Dv-O288PWRWBWi5QHxaU0o26vI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

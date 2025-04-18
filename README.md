@@ -1,117 +1,118 @@
-# 🐱 Meow Status
+# Meow Status
 
-Meow Status is a fun Flutter-based application that displays a random cat image and quote based on the HTTP status code you provide. Perfect for developers who want to debug with a dose of cuteness.
+Uma experiência de chat com IA desenvolvida em Flutter, projetada para expressar e refletir estados emocionais de forma lúdica e felina.
 
----
-
-## 🚀 Project Overview
-
-- **Platform**: Flutter (Android, iOS, Web, Desktop)
-- **Architecture**: Feature-first, Clean Code
-- **Language**: Dart
-- **Use case**: Fun + educational tool to visualize HTTP status codes via cat images
+![Demonstração do Meow Status](assets/docs/gifs/meow_status_v0.gif)
 
 ---
 
-## 🧱 Folder Structure
+## Visão Geral do Projeto
 
-```bash
-.
-├── android/                 # Android native files
-├── ios/                     # iOS native files
-├── lib/                     # Flutter/Dart core logic
-│   └── features/status      # Main feature: status → image + quote
-├── web/                     # Web-related assets
-├── test/                    # Unit and widget tests
-├── macos/, linux/, windows/ # Desktop platform-specific files
-├── .github/workflows/       # CI config using GitHub Actions
-└── docs/                    # TechDocs (Backstage) documentation
+Meow Status é um app Flutter leve e expressivo que permite que usuários interajam com um Modelo de Linguagem (LLM) por meio de uma interface de chat com tema de gato. Serve como um espaço experimental para explorar conversas em fluxo contínuo, feedback em tempo real e reflexão emocional com IA generativa.
+
+### Funcionalidades
+
+- **Entrada de linguagem natural**: O usuário descreve como está se sentindo em linguagem cotidiana
+- **Visualização inteligente de resposta**: Balões de mensagem dinâmicos exibem as respostas de forma clara
+- **Integração com LLM**: Usa o Gemini para interpretar e responder com base no contexto
+- **Mensagens em tempo real**: A resposta da IA aparece enquanto está sendo gerada
+- **Histórico da conversa**: Toda a conversa fica disponível em rolagem contínua
+- **Manutenção de contexto**: A sessão preserva o entendimento entre mensagens consecutivas
+- **Experiência de entrada do usuário**: Campo de texto fluido com feedback visual
+- **Indicador de resposta em andamento**: Placeholder visível enquanto o Meow "pensa"
+- **Log visual**: Respostas brutas da IA são exibidas conforme são recebidas
+
+---
+
+## Arquitetura
+
+Este é um aplicativo Flutter independente composto por componentes bem organizados:
+
+```
+lib/
+└── firebase_options.dart
+└── main.dart
+├── models/
+│   └── message.dart
+├── providers/
+│   └── chat_state_notifier.dart
+│   └── chat_state_provider.dart
+│   └── chat_state_provider.g.dart
+│   └── gemini.dart
+│   └── gemini.g.dart
+│   └── system_prompt.dart
+│   └── system_prompt.g.dart
+├── services/
+│   └── gemini_chat_service.dart
+│   └── gemini_chat_service.g.dart
+├── ui/
+│   ├── screens/
+│   │   └── main_screen.dart
+│   │   └── meow_status_screen.dart
+│   ├── widgets/
+│   │   ├── chat/
+│   │   │   └── chat_input.dart
+│   │   │   └── message_bubble.dart
+│   │   │   └── messages_list.dart
 ```
 
 ---
 
-## 📦 Features
+## Tecnologias Utilizadas
 
-- ✅ Fetch random cat images
-- ✅ Display inspirational (or sarcastic) cat quotes
-- ✅ Handles HTTP status codes visually
-- 🧪 Unit and widget tests (WIP)
-- 🧰 CI with GitHub Actions (`flutter_ci.yml`)
-
----
-
-## 🛠 How to Run Locally
-
-### ▶️ Common Setup
-
-```bash
-flutter pub get
-```
-
-### 📱 Android
-
-```bash
-flutter emulators --launch <emulator_id>  # Optional: start emulator
-flutter run -d android
-```
-
-> Ensure you have an Android emulator or physical device connected.
-
-### 🍏 iOS
-
-```bash
-open ios/Runner.xcworkspace  # Open in Xcode
-# In Xcode, set up signing and select a valid team
-flutter run -d ios
-```
-
-> Make sure you have Xcode and CocoaPods installed.
-
-### 🌐 Web
-
-```bash
-flutter run -d chrome
-```
+- **Framework**: Flutter / Dart
+- **LLM**: Gemini via `firebase_vertexai`
+- **Gerenciamento de Estado**: Riverpod
+- **Geração de IDs**: `uuid`
+- **Integração Firebase**: FlutterFire CLI
+- **Layout Responsivo**: Design voltado para dispositivos móveis
 
 ---
 
-## 🧪 Running Tests
+## Suporte a Plataformas
+
+- Android ✅
+- iOS ✅
+- Web (experimental) 🚧
+
+---
+
+## Comandos de Desenvolvimento
 
 ```bash
+# Formatar o código
+dart format lib test
+
+# Gerar código (ex: Riverpod ou Freezed)
+dart run build_runner build --delete-conflicting-outputs
+
+# Rodar a app localmente em um emulador android ativo
+flutter run -d emulator-5554      
+
+# Analisar código
+flutter analyze
+
+# Executar testes
 flutter test
+
+# Testes com cobertura
+flutter test --coverage
+
+# Gerar relatório de cobertura
+genhtml coverage/lcov.info -o coverage/html
+open coverage/html/index.html
 ```
 
 ---
 
-## 📈 CI/CD
+## Fluxo de Uso
 
-This project includes a basic GitHub Actions setup for Flutter.  
-Workflow path: `.github/workflows/flutter_ci.yml`
-
----
-
-## 👩‍💻 Contributing
-
-To help improve Meow Status:
-
-1. Fork this repo
-2. Create a new branch (`feature/my-feature`)
-3. Commit your changes with clear messages
-4. Push and open a PR
-
-Don't forget to run `flutter format .` before committing!
+1. O usuário digita uma mensagem descrevendo seu estado (ex: "Hoje me sinto em paz")
+2. O app envia a mensagem para o Gemini
+3. O Gemini processa e retorna uma resposta por streaming
+4. A mensagem aparece em tempo real enquanto é gerada
+5. Toda a conversa pode ser revisitada pelo histórico
 
 ---
 
-## 📚 Related Docs
-
-- [Status Codes for Humans](https://http.cat/)
-- [Flutter Documentation](https://flutter.dev/docs)
-
----
-
-## 💬 Contact
-
-For questions or suggestions, ping the project maintainer on Slack or GitHub.
-
-Happy Coding and... Meow! 🐾
+Criado com dedicação por humanos!
