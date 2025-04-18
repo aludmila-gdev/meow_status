@@ -1,5 +1,5 @@
 name: meow_status
-description: "A new Flutter project."
+description: "Meow conversations with generative AI."
 publish_to: 'none'
 version: 0.1.0
 
@@ -9,7 +9,6 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  colorist_ui: ^0.1.2
   flutter_riverpod: ^2.6.1
   riverpod_annotation: ^2.6.1
   firebase_core: ^3.13.0
@@ -24,6 +23,7 @@ dev_dependencies:
   riverpod_lint: ^2.6.5
   json_serializable: ^6.9.4
   custom_lint: ^0.7.5
+  mocktail: ^1.0.0
 
 flutter:
   uses-material-design: true
