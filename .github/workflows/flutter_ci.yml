@@ -36,7 +36,7 @@ jobs:
 
       - name: Generate filtered diff for Gemini review
         run: git diff origin/master...HEAD -- '*.dart' > changes.diff
-
+      
       - name: Send full diff to Gemini
         id: gemini_review
         run: |
@@ -46,9 +46,12 @@ jobs:
           ESCAPED_CONTENT=$(jq -Rs . <<< "$FULL_CONTENT")
           JSON_PAYLOAD=$(jq -n --arg content "$ESCAPED_CONTENT" '{"contents":[{"role": "user", "parts":[{"text": $content}]}]}')
           API_KEY=${{ secrets.GEMINI_API_KEY }}
-          RESPONSE=$(curl -H 'Content-Type: application/json' -d "$JSON_PAYLOAD" "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}")
+          RESPONSE=$(curl -H 'Content-Type: application/json' \
+            -d "$JSON_PAYLOAD" \
+            "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${API_KEY}")
           echo "API response: $RESPONSE"
           echo "$RESPONSE" > gemini_response.json
+      
 
       - name: Extract Gemini response message
         run: |
