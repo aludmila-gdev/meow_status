@@ -2,12 +2,11 @@
 
 An AI-powered chat experience built with Flutter, designed to express and reflect emotional states through a playful feline lens.
 
-<div align="center">
-  <img 
-    src="https://github.com/aludmila-gdev/meow_status/blob/master/assets/docs/gifs/meow_status_v0.gif?raw=true" 
-    alt="Meow Status Demo" 
-    width="500">
-</div>
+<img 
+  src="https://raw.githubusercontent.com/aludmila-gdev/meow_status/master/assets/docs/gifs/meow_status_v0.gif" 
+  alt="Meow Status Demo" 
+  width="500" />
+
 
 
 ---
