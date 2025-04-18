@@ -34,12 +34,6 @@ jobs:
       - name: Run tests with coverage
         run: flutter test --coverage
 
-      - name: Upload test coverage result
-        uses: actions/upload-artifact@v2.3.1
-        with:
-          name: coverage-report
-          path: coverage/lcov.info
-
       - name: Generate filtered diff for Gemini review
         run: git diff origin/master...HEAD -- '*.dart' > changes.diff
 
