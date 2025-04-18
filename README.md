@@ -78,6 +78,8 @@ lib/
 - **Firebase Integration**: FlutterFire CLI
 - **Responsive UI**: Mobile-first layout
 
+https://aistudio.google.com/app/apikey
+
 ---
 
 ## 📱 Platform Support

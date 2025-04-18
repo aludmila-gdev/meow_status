@@ -27,7 +27,6 @@ jobs:
       - name: Dummy step for PR validation
         run: echo "✅ Dummy step executed — PR flow is working!"
 
-
       - name: Install dependencies
         run: flutter pub get
 
@@ -36,11 +35,8 @@ jobs:
 
       - name: Generate full diff for Gemini review (excluding unnecessary files)
         run: |
-          git diff origin/master...HEAD \
-            ':(exclude).github/gemini_review_prompt.txt' \
-            ':(exclude)pubspec.lock' > changes.diff
-      
-      
+          git diff origin/master...HEAD             ':(exclude).github/gemini_review_prompt.txt'             ':(exclude)pubspec.lock' > changes.diff
+
       - name: Send full diff to Gemini
         id: gemini_review
         run: |
@@ -50,17 +46,15 @@ jobs:
           ESCAPED_CONTENT=$(jq -Rs . <<< "$FULL_CONTENT")
           JSON_PAYLOAD=$(jq -n --arg content "$ESCAPED_CONTENT" '{"contents":[{"role": "user", "parts":[{"text": $content}]}]}')
           API_KEY=${{ secrets.GEMINI_API_KEY }}
-          RESPONSE=$(curl -H 'Content-Type: application/json' \
-            -d "$JSON_PAYLOAD" \
-            "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${API_KEY}")
+          RESPONSE=$(curl -H 'Content-Type: application/json'             -d "$JSON_PAYLOAD"             "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${API_KEY}")
           echo "API response: $RESPONSE"
           echo "$RESPONSE" > gemini_response.json
-      
 
       - name: Extract Gemini response message
         run: |
           if jq -e '.candidates[0].content.parts[0].text' gemini_response.json > /dev/null; then
-            jq -r '.candidates[0].content.parts[0].text' gemini_response.json > gemini_review.md
+            jq -r '.candidates[0].content.parts[0].text' gemini_response.json |
+              awk '/^1\. Technical Summary of the Changes/ {start=1} start' > gemini_review.md
           else
             echo "No valid content in response" > gemini_review.md
           fi
@@ -79,5 +73,5 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           issue-number: ${{ github.event.pull_request.number }}
           body: |
-            ## Gemini Code Review
+            ## 🤖 Gemini Code Review
             ${{ env.GEMINI_REVIEW }}
