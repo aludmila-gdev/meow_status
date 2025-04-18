@@ -35,7 +35,7 @@ jobs:
         run: flutter test --coverage
 
       - name: Generate filtered diff for Gemini review
-        run: git diff origin/master...HEAD -- '*.dart' > changes.diff
+        run: git diff origin/master...HEAD > changes.diff
       
       - name: Send full diff to Gemini
         id: gemini_review
