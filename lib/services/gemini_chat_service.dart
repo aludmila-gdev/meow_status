@@ -13,8 +13,6 @@ class GeminiChatService {
   final Ref ref;
 
   Future<void> sendMessage(String message) async {
-    print('[SERVICE] Entrando no sendMessage');
-
     final chatSession = await ref.read(chatSessionProvider.future);
     final chatStateNotifier = ref.read(chatStateNotifierProvider.notifier);
 
@@ -22,28 +20,22 @@ class GeminiChatService {
     final llmMessage = chatStateNotifier.createLlmMessage();
 
     try {
-      print('[SERVICE] Enviando para Gemini...');
       final response = await chatSession.sendMessage(Content.text(message));
 
       for (final candidate in response.candidates) {
         for (final part in candidate.content.parts) {
-          print('[DEBUG] Part type: ${part.runtimeType}');
           if (part is TextPart) {
-            print('[DEBUG] Text part: ${part.text}');
             chatStateNotifier.appendToMessage(llmMessage.id, part.text);
           }
         }
       }
-    } catch (e, st) {
-      print('[SERVICE ERROR] Erro ao enviar mensagem: $e');
-      print('[SERVICE ERROR] Stacktrace:\n$st');
+    } catch (e) {
       chatStateNotifier.appendToMessage(
         llmMessage.id,
         "\nMeowww... Algo deu errado! 😿",
       );
     } finally {
       chatStateNotifier.finalizeMessage(llmMessage.id);
-      print('[SERVICE] Mensagem finalizada');
     }
   }
 }

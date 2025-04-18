@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+// ignore: depend_on_referenced_packages
 import 'package:uuid/uuid.dart';
 import '../models/message.dart';
 

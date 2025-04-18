@@ -1,75 +1,69 @@
-# Meow Status
+# Meow Status 🐾
 
-Uma experiência de chat com IA desenvolvida em Flutter, projetada para expressar e refletir estados emocionais de forma lúdica e felina.
+An AI-powered chat experience built with Flutter, designed to express and reflect emotional states through a playful feline lens.
 
-![Demonstração do Meow Status](assets/docs/gifs/meow_status_v0.gif)
-
----
-
-## Visão Geral do Projeto
-
-Meow Status é um app Flutter leve e expressivo que permite que usuários interajam com um Modelo de Linguagem (LLM) por meio de uma interface de chat com tema de gato. Serve como um espaço experimental para explorar conversas em fluxo contínuo, feedback em tempo real e reflexão emocional com IA generativa.
-
-### Funcionalidades
-
-- **Entrada de linguagem natural**: O usuário descreve como está se sentindo em linguagem cotidiana
-- **Visualização inteligente de resposta**: Balões de mensagem dinâmicos exibem as respostas de forma clara
-- **Integração com LLM**: Usa o Gemini para interpretar e responder com base no contexto
-- **Mensagens em tempo real**: A resposta da IA aparece enquanto está sendo gerada
-- **Histórico da conversa**: Toda a conversa fica disponível em rolagem contínua
-- **Manutenção de contexto**: A sessão preserva o entendimento entre mensagens consecutivas
-- **Experiência de entrada do usuário**: Campo de texto fluido com feedback visual
-- **Indicador de resposta em andamento**: Placeholder visível enquanto o Meow "pensa"
-- **Log visual**: Respostas brutas da IA são exibidas conforme são recebidas
+![Meow Status Demo](assets/docs/gifs/meow_status_v0.gif)
 
 ---
 
-## Arquitetura
+## 🐱 Project Overview
 
-Este é um aplicativo Flutter independente composto por componentes bem organizados:
+**Meow Status** is a lightweight Flutter app where users interact with a Large Language Model (LLM) through a cat-themed chat interface. It's an experimental space to explore emotional reflection, live feedback, and streaming conversations with generative AI.
+
+### ✨ Features
+
+- Natural language input from the user
+- Smart response bubbles with real-time rendering
+- Gemini LLM integration via `firebase_vertexai`
+- Streaming responses for fluid interaction
+- Continuous conversation history
+- Context preservation across messages
+- Smooth input field with visual feedback
+- Typing indicator while the Meow is “thinking”
+- Raw visual logs for AI debugging
+
+---
+
+## 🧱 Architecture Overview
 
 ```
 lib/
-└── firebase_options.dart
-└── main.dart
+├── firebase_options.dart
+├── main.dart
 ├── models/
 │   └── message.dart
 ├── providers/
-│   └── chat_state_notifier.dart
-│   └── chat_state_provider.dart
-│   └── chat_state_provider.g.dart
-│   └── gemini.dart
-│   └── gemini.g.dart
-│   └── system_prompt.dart
-│   └── system_prompt.g.dart
+│   ├── chat_state_notifier.dart
+│   ├── chat_state_provider.dart
+│   ├── gemini.dart
+│   ├── system_prompt.dart
 ├── services/
 │   └── gemini_chat_service.dart
-│   └── gemini_chat_service.g.dart
 ├── ui/
 │   ├── screens/
-│   │   └── main_screen.dart
+│   │   ├── main_screen.dart
 │   │   └── meow_status_screen.dart
 │   ├── widgets/
-│   │   ├── chat/
-│   │   │   └── chat_input.dart
-│   │   │   └── message_bubble.dart
-│   │   │   └── messages_list.dart
+│   │   └── chat/
+│   │       ├── chat_input.dart
+│   │       ├── message_bubble.dart
+│   │       └── messages_list.dart
 ```
 
 ---
 
-## Tecnologias Utilizadas
+## 🚀 Tech Stack
 
-- **Framework**: Flutter / Dart
-- **LLM**: Gemini via `firebase_vertexai`
-- **Gerenciamento de Estado**: Riverpod
-- **Geração de IDs**: `uuid`
-- **Integração Firebase**: FlutterFire CLI
-- **Layout Responsivo**: Design voltado para dispositivos móveis
+- **Framework**: Flutter + Dart
+- **AI**: Gemini via `firebase_vertexai`
+- **State Management**: Riverpod
+- **UUIDs**: `uuid` package
+- **Firebase Integration**: FlutterFire CLI
+- **Responsive UI**: Mobile-first layout
 
 ---
 
-## Suporte a Plataformas
+## 📱 Platform Support
 
 - Android ✅
 - iOS ✅
@@ -77,42 +71,70 @@ lib/
 
 ---
 
-## Comandos de Desenvolvimento
+## 🛠️ Local Setup on macOS (Android)
+
+### Prerequisites
+
+- Flutter SDK installed: https://docs.flutter.dev/get-started/install/macos
+- Xcode installed (for CocoaPods and iOS support)
+- Android Studio installed
+- Android Emulator configured (e.g. Pixel 5, API 34)
+- Dart and Flutter plugins enabled in your IDE
+- Firebase project with Gemini API enabled
+- `google-services.json` correctly placed in `android/app`
+
+### Step-by-step
 
 ```bash
-# Formatar o código
-dart format lib test
+# 1. Clone the repository
+git clone git@github.com:aludmila-gdev/meow_status.git
+cd meow_status
 
-# Gerar código (ex: Riverpod ou Freezed)
+# 2. Install dependencies
+flutter pub get
+
+# 3. Generate necessary files
 dart run build_runner build --delete-conflicting-outputs
 
-# Rodar a app localmente em um emulador android ativo
-flutter run -d emulator-5554      
+# 4. Launch Android emulator (or open it via Android Studio)
+flutter emulators --launch emulator-5554
 
-# Analisar código
+# 5. Run the app on the emulator
+flutter run -d emulator-5554
+```
+
+> 💡 Tip: You can also run `flutter doctor` to validate your setup and get suggestions.
+
+---
+
+## 📊 Development Commands
+
+```bash
+# Format code
+dart format lib test
+
+# Static analysis
 flutter analyze
 
-# Executar testes
+# Run tests
 flutter test
 
-# Testes com cobertura
+# Run with coverage
 flutter test --coverage
-
-# Gerar relatório de cobertura
 genhtml coverage/lcov.info -o coverage/html
 open coverage/html/index.html
 ```
 
 ---
 
-## Fluxo de Uso
+## 💬 How It Works
 
-1. O usuário digita uma mensagem descrevendo seu estado (ex: "Hoje me sinto em paz")
-2. O app envia a mensagem para o Gemini
-3. O Gemini processa e retorna uma resposta por streaming
-4. A mensagem aparece em tempo real enquanto é gerada
-5. Toda a conversa pode ser revisitada pelo histórico
+1. User types a sentence like *"I'm feeling peaceful today"*
+2. The message is sent to Gemini via streaming API
+3. Gemini replies with an emotional or supportive response
+4. Messages are shown in real-time as they're streamed
+5. The conversation history is preserved
 
 ---
 
-Criado com dedicação por humanos!
+Made with ❤️ by humans (and cats).

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../models/message.dart';
 import '../../../providers/chat_state_notifier.dart';
 import 'message_bubble.dart';
 

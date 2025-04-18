@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../services/gemini_chat_service.dart';
 import '../../providers/chat_state_provider.dart';
-import '../../models/message.dart';
 
 class MeowStatusScreen extends ConsumerStatefulWidget {
   const MeowStatusScreen({super.key});
@@ -17,7 +16,6 @@ class _MeowStatusScreenState extends ConsumerState<MeowStatusScreen> {
 
   void _sendMessage() async {
     final text = _controller.text.trim();
-    print('[DEBUG] Texto digitado: $text');
     if (text.isEmpty) return;
 
     _controller.clear();

@@ -1,6 +1,6 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_vertexai/firebase_vertexai.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+// ignore: depend_on_referenced_packages
 import 'package:uuid/uuid.dart';
 
 part 'chat_state_provider.g.dart';
