@@ -34,8 +34,12 @@ jobs:
       - name: Run tests with coverage
         run: flutter test --coverage
 
-      - name: Generate filtered diff for Gemini review
-        run: git diff origin/master...HEAD > changes.diff
+      - name: Generate full diff for Gemini review (excluding unnecessary files)
+        run: |
+          git diff origin/master...HEAD \
+            ':(exclude).github/gemini_review_prompt.txt' \
+            ':(exclude)pubspec.lock' > changes.diff
+      
       
       - name: Send full diff to Gemini
         id: gemini_review
