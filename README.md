@@ -7,7 +7,19 @@ An AI-powered chat experience built with Flutter, designed to express and reflec
   alt="Meow Status Demo" 
   width="500" />
 
+---
 
+## 📚 Table of Contents
+
+- [🐱 Project Overview](#-project-overview)
+- [✨ Features](#-features)
+- [🧱 Architecture Overview](#-architecture-overview)
+- [🚀 Tech Stack](#-tech-stack)
+- [📱 Platform Support](#-platform-support)
+- [🛠️ Local Setup on macOS (Android)](#️-local-setup-on-macos-android)
+- [📊 Development Commands](#-development-commands)
+- [💬 How It Works](#-how-it-works)
+- [🤝 Contributing](#-contributing)
 
 ---
 
@@ -139,6 +151,48 @@ open coverage/html/index.html
 3. Gemini replies with an emotional or supportive response
 4. Messages are shown in real-time as they're streamed
 5. The conversation history is preserved
+
+---
+
+## 🤝 Contributing
+
+We welcome all feline-friendly contributions! Here's how to get started:
+
+### 🔀 Branch Naming Convention
+
+- `feature/<name>` — new features
+- `bugfix/<name>` — fixes for bugs
+- `chore/<name>` — minor updates and maintenance
+- `test/<name>` — for test-related changes
+- `refactor/<name>` — for code structure changes
+
+### 💬 Commit Messages
+
+Follow the [Conventional Commits](https://www.conventionalcommits.org/) pattern:
+
+```
+feat: add new cat animation on response
+fix: correct overflow on chat bubble
+test: add widget test for ChatInput
+```
+
+### 🔧 Pull Requests
+
+- Keep PRs focused and small
+- Always link to the related issue (if applicable)
+- Add screenshots or GIFs for UI changes
+- Ensure all tests are passing (`flutter test`)
+- Run code coverage locally (`flutter test --coverage`)
+
+### ✅ CI/CD Pipelines
+
+The app uses GitHub Actions for:
+
+- Running tests on pull requests
+- Collecting coverage reports
+- Sending diffs to Gemini for AI-assisted code reviews
+
+Pipeline will fail if tests fail or coverage is broken — keep it green! 💚
 
 ---
 
