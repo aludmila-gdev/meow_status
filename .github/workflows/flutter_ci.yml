@@ -54,10 +54,11 @@ jobs:
         run: |
           if jq -e '.candidates[0].content.parts[0].text' gemini_response.json > /dev/null; then
             jq -r '.candidates[0].content.parts[0].text' gemini_response.json |
-              awk '/^1\. Technical Summary of the Changes/ {start=1} start' > gemini_review.md
+              awk '/Technical Summary of the Changes/ {start=1} start' > gemini_review.md
           else
             echo "No valid content in response" > gemini_review.md
           fi
+      
 
       - name: Load the Gemini response into a variable
         id: load_gemini_response
