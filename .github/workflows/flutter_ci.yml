@@ -22,7 +22,7 @@ jobs:
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: 'stable'
+          flutter-version: '3.29.3'
       
       - name: Dummy step for PR validation
         run: echo "✅ Dummy step executed — PR flow is working!"
