@@ -61,7 +61,9 @@ class ChatStateNotifier extends _$ChatStateNotifier {
     ];
   }
 
-  void finalizeMessage(String id) {
-    // Optional: mark message as complete, if you add that support later
+  void finalizeMessage(String id) {}
+
+  void clearMessages() {
+    state = [];
   }
 }
