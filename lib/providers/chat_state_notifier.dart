@@ -26,6 +26,10 @@ class ChatStateNotifier extends StateNotifier<List<Message>> {
           m,
     ];
   }
+
+  void clearMessages() {
+    state = [];
+  }
 }
 
 final chatProvider = StateNotifierProvider<ChatStateNotifier, List<Message>>((

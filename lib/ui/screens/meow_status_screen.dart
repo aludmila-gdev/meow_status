@@ -42,6 +42,18 @@ class _MeowStatusScreenState extends ConsumerState<MeowStatusScreen> {
     }
   }
 
+  void _clearConversation() {
+    ref.read(chatStateNotifierProvider.notifier).clearMessages();
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Conversa apagada com sucesso! 😺🧼'),
+        behavior: SnackBarBehavior.floating,
+        duration: Duration(seconds: 2),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final messages = ref.watch(chatStateNotifierProvider);
@@ -52,6 +64,13 @@ class _MeowStatusScreenState extends ConsumerState<MeowStatusScreen> {
         backgroundColor: Colors.deepPurple.shade100,
         title: const Text('Meow Status 😺'),
         centerTitle: true,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.delete_outline),
+            tooltip: 'Limpar conversa',
+            onPressed: _clearConversation,
+          ),
+        ],
       ),
       body: Column(
         children: [
